@@ -18,34 +18,76 @@ import Button from '@material-ui/core/Button';
 
 import Listview from './components/Listview/Listview';
 
-/*function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  );
-}*/
-
 class App extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
         mainResult: [],
-        inputVal: ''
+        inputVal: '',
+        ayahDetails: {},
+        rowResult: {}
       }
     }
+    
+    
     onClick = (event) => {
       
       const filter = this.state.inputVal;
       
-      fetch('http://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-uthmani,en.asad,en.pickthall,ar.alafasy')
+      fetch('http://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-uthmani,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
       .then(res => res.json())
       .then((data) => {
-        console.log(data)
-        this.setState({ mainResult: data.data})
+        //console.log(data)
+        //this.setState({rowResult :data});
+        //this.setState({ mainResult: this.processData(data)});
+        this.processData(data)
+        
       })
       .catch(console.log)
     }
+    
+    //processData = (result) => {
+     processData(result) {
+      //console.log(data);
+      let res = [];
+      let audio = '';
+      let details = null;
+      result.data.map(item => {
+          let filteredItem = null;
+          if(!item.audio){
+            filteredItem = {'edition': item.edition, 'text': item.text};
+            res.push(filteredItem);
+          }
+          else{
+            if(audio === ''){
+              audio = item.audio;
+            }
+          }
+          if(!details){
+            //details = item.surah;
+            details = Object.assign(item.surah, {
+              'hizbQuarter': item.hizbQuarter,
+              'juz': item.juz,  
+              'manzil': item.manzil,
+              'number': item.number,
+              'numberInSurah': item.numberInSurah,
+              'page': item.page,
+              'ruku': item.ruku,
+              'sajda': item.sajda
+            });
+          }
+        }
+      )
+      if(audio){
+        details = Object.assign(details, {'audio': audio});
+      }
+      console.log(res);
+      console.log(details);
+      this.setState({ ayahDetails: details});
+      this.setState({ mainResult: res});
+      
+    }
+    
     updateInputVal = (evt) => {
       this.setState({
         inputVal: evt.target.value
@@ -55,6 +97,13 @@ class App extends React.Component {
   
 
   render(){
+    
+    
+    let listview;
+    if(this.state.mainResult.length){
+      
+      listview = <Listview results={this.state.mainResult} details={this.state.ayahDetails}/>
+    }
   return (
     <div>
       <header>
@@ -80,13 +129,14 @@ class App extends React.Component {
             fullWidth={true}
             
           />
-          <Button onClick={this.onClick} size='small' variant='raised' fullWidth={false}>
+          <Button onClick={this.onClick} size='small' variant='contained' fullWidth={false}>
             Search
           </Button>
-          
+          {listview}
         </section>
       </div>
-      <Listview results={this.state.mainResult} />
+      
+      
            
     </div>
   );
