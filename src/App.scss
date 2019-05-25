@@ -35,6 +35,9 @@ h1{
 }
 .content-wrapper{
   padding:20px 15px;
+  h2{
+    margin: 0; padding:0;
+  }
 }
 .row-flex{
   flex-direction: row;
@@ -44,4 +47,7 @@ h1{
 
 .basis-80{
   flex-basis: 80%;
+}
+.no-padding{
+  padding:0 !important;
 }

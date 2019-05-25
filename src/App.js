@@ -16,6 +16,14 @@ import Button from '@material-ui/core/Button';
 //import Tabs from '@material-ui/core/Tabs';
 //import Tab from '@material-ui/core/Tab';
 
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+//import CheckBoxIcon from '@material-ui/icons/CheckBox';
+//import Favorite from '@material-ui/icons/Favorite';
+//import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+
 import Listview from './components/Listview/Listview';
 
 class App extends React.Component {
@@ -25,7 +33,8 @@ class App extends React.Component {
         mainResult: [],
         inputVal: '',
         ayahDetails: {},
-        rowResult: {}
+        rawData: {},
+        chkTrans: {'english': false, 'malayalam' : false}
       }
     }
     
@@ -34,11 +43,11 @@ class App extends React.Component {
       
       const filter = this.state.inputVal;
       
-      fetch('http://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-uthmani,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
+      fetch('http://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
       .then(res => res.json())
       .then((data) => {
         //console.log(data)
-        //this.setState({rowResult :data});
+        this.setState({rawData :data});
         //this.setState({ mainResult: this.processData(data)});
         this.processData(data)
         
@@ -48,28 +57,57 @@ class App extends React.Component {
     
     //processData = (result) => {
      processData(result) {
-      //console.log(data);
+       //console.log('----result---');
+      //console.log(result);
       let res = [];
       let audio = '';
       let details = null;
+      
+      this.setState({ 
+        ayahDetails: {},
+        mainResult: []
+      });
+      //this.setState({ mainResult: res});
+      
       result.data.map(item => {
           let filteredItem = null;
+          var flag = true;
+          /* separate audio details */
           if(!item.audio){
+            
             filteredItem = {'edition': item.edition, 'text': item.text};
-            res.push(filteredItem);
+            switch(item.edition.language){
+              case 'en':
+                flag = this.state.chkTrans.english;
+                break;
+              case 'ml':
+                flag = this.state.chkTrans.malayalam;
+                break;
+            }
+            console.log(flag);
+            console.log(this.state.chkTrans.english);
+            console.log(this.state.chkTrans.malayalam);
+            if(flag){
+              console.log('true----');
+              res.push(filteredItem);
+            }
+            flag = true;
           }
           else{
             if(audio === ''){
               audio = item.audio;
             }
           }
+          
           if(!details){
-            //details = item.surah;
-            details = Object.assign(item.surah, {
+
+            details = item.surah;
+            
+            details = Object.assign(details, {
               'hizbQuarter': item.hizbQuarter,
               'juz': item.juz,  
               'manzil': item.manzil,
-              'number': item.number,
+              'ayahNumber': item.number,
               'numberInSurah': item.numberInSurah,
               'page': item.page,
               'ruku': item.ruku,
@@ -94,10 +132,21 @@ class App extends React.Component {
       });
     }
     
-  
+  chkSelectChange = (evt) => {
+    switch(evt.target.value){
+       case "eng":
+        this.state.chkTrans.english = !this.state.chkTrans.english;
+        break;
+       case "mlm":
+        this.state.chkTrans.malayalam = !this.state.chkTrans.malayalam;
+        break;
+    }
+    if(this.state.rawData.status && this.state.rawData.status === 'OK'){
+      this.processData(this.state.rawData);
+    }
+  }
 
   render(){
-    
     
     let listview;
     if(this.state.mainResult.length){
@@ -117,7 +166,7 @@ class App extends React.Component {
       </header>
       
       <div className='content-wrapper'>
-        <section className='row-flex'>
+        <section flexdirection="row">
           <TextField
             id="standard-error"
             label="Enter your search reference (E.g. 2.263)"
@@ -129,11 +178,32 @@ class App extends React.Component {
             fullWidth={true}
             
           />
-          <Button onClick={this.onClick} size='small' variant='contained' fullWidth={false}>
+          <FormGroup row>
+          
+            <p><strong>Trans: &nbsp;</strong></p>
+            <FormControlLabel
+              value="eng"
+              control={<Checkbox color="primary" />}
+              label="English"
+              labelPlacement="end"
+              checked={this.state.chkTrans.english}
+              onChange={evt => this.chkSelectChange(evt)}
+            />
+            <FormControlLabel
+              value="mlm"
+              control={<Checkbox color="primary" />}
+              label="Malayalam"
+              labelPlacement="end"
+              checked={this.state.chkTrans.malayalam}
+              onChange={evt => this.chkSelectChange(evt)}
+              
+            />
+            <Button onClick={this.onClick} size='medium' variant='contained' fullWidth={false}>
             Search
           </Button>
-          {listview}
+          </FormGroup>
         </section>
+        {listview}
       </div>
       
       
@@ -142,5 +212,5 @@ class App extends React.Component {
   );
   }
 }
-
+//onChange={handleChange('checkedF')}
 export default App;
