@@ -33,10 +33,30 @@ h1{
     transform: rotate(360deg);
   }
 }
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-basis: 100%;
+}
 .content-wrapper{
   padding:20px 15px;
+  //height: calc(100vh - 125px);
+  
+  
   h2{
     margin: 0; padding:0;
+  }
+}
+.search-wrapper{
+  height: calc(100vh - 125px);
+  display: flex;
+  transition: all 3s;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  &.shrink {
+    height: auto;
   }
 }
 .row-flex{
@@ -50,4 +70,13 @@ h1{
 }
 .no-padding{
   padding:0 !important;
+}
+.error-txt {
+  color: red;
+  text-align: center;
+  width: 100%;
+}
+
+.txt-arabic{
+  text-align: right;
 }

@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 //import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import Popover from '@material-ui/core/Popover';
 
 import Typography from '@material-ui/core/Typography';
 
@@ -26,6 +27,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import Listview from './components/Listview/Listview';
 
+
 class App extends React.Component {
     constructor(props) {
       super(props);
@@ -34,6 +36,7 @@ class App extends React.Component {
         inputVal: '',
         ayahDetails: {},
         rawData: {},
+        searchBlockClass: 'search-wrapper',
         chkTrans: {'english': false, 'malayalam' : false}
       }
     }
@@ -48,17 +51,16 @@ class App extends React.Component {
       .then((data) => {
         //console.log(data)
         this.setState({rawData :data});
+        this.state.searchBlockClass='search-wrapper shrink';
         //this.setState({ mainResult: this.processData(data)});
-        this.processData(data)
+        this.processData(data);
+        
         
       })
       .catch(console.log)
     }
     
-    //processData = (result) => {
      processData(result) {
-       //console.log('----result---');
-      //console.log(result);
       let res = [];
       let audio = '';
       let details = null;
@@ -67,8 +69,6 @@ class App extends React.Component {
         ayahDetails: {},
         mainResult: []
       });
-      //this.setState({ mainResult: res});
-      
       result.data.map(item => {
           let filteredItem = null;
           var flag = true;
@@ -84,11 +84,11 @@ class App extends React.Component {
                 flag = this.state.chkTrans.malayalam;
                 break;
             }
-            console.log(flag);
-            console.log(this.state.chkTrans.english);
-            console.log(this.state.chkTrans.malayalam);
+            //console.log(flag);
+            //console.log(this.state.chkTrans.english);
+            //console.log(this.state.chkTrans.malayalam);
             if(flag){
-              console.log('true----');
+              //console.log('true----');
               res.push(filteredItem);
             }
             flag = true;
@@ -119,8 +119,8 @@ class App extends React.Component {
       if(audio){
         details = Object.assign(details, {'audio': audio});
       }
-      console.log(res);
-      console.log(details);
+      //console.log(res);
+      //console.log(details);
       this.setState({ ayahDetails: details});
       this.setState({ mainResult: res});
       
@@ -150,11 +150,12 @@ class App extends React.Component {
     
     let listview;
     if(this.state.mainResult.length){
-      
       listview = <Listview results={this.state.mainResult} details={this.state.ayahDetails}/>
+    } else {
+      listview = <p className='error-txt'>The Referrence entered is Invalid</p>
     }
   return (
-    <div>
+    <div className="page-wrapper">
       <header>
         <AppBar position="static" color="default">
           <Toolbar>
@@ -166,7 +167,7 @@ class App extends React.Component {
       </header>
       
       <div className='content-wrapper'>
-        <section flexdirection="row">
+        <section className={this.state.searchBlockClass} id="search-block">
           <TextField
             id="standard-error"
             label="Enter your search reference (E.g. 2.263)"
