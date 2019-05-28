@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/anoopsajidpm/q-search/static/css/main.13b7c7a6.chunk.css",
+    "main.js": "/anoopsajidpm/q-search/static/js/main.e93e6394.chunk.js",
+    "main.js.map": "/anoopsajidpm/q-search/static/js/main.e93e6394.chunk.js.map",
+    "runtime~main.js": "/anoopsajidpm/q-search/static/js/runtime~main.7a975c10.js",
+    "runtime~main.js.map": "/anoopsajidpm/q-search/static/js/runtime~main.7a975c10.js.map",
+    "static/css/2.d8d083ec.chunk.css": "/anoopsajidpm/q-search/static/css/2.d8d083ec.chunk.css",
+    "static/js/2.e0415919.chunk.js": "/anoopsajidpm/q-search/static/js/2.e0415919.chunk.js",
+    "static/js/2.e0415919.chunk.js.map": "/anoopsajidpm/q-search/static/js/2.e0415919.chunk.js.map",
+    "index.html": "/anoopsajidpm/q-search/index.html",
+    "precache-manifest.214bd645519f6b81f67c834acc288187.js": "/anoopsajidpm/q-search/precache-manifest.214bd645519f6b81f67c834acc288187.js",
+    "service-worker.js": "/anoopsajidpm/q-search/service-worker.js",
+    "static/css/2.d8d083ec.chunk.css.map": "/anoopsajidpm/q-search/static/css/2.d8d083ec.chunk.css.map",
+    "static/css/main.13b7c7a6.chunk.css.map": "/anoopsajidpm/q-search/static/css/main.13b7c7a6.chunk.css.map",
+    "static/media/index.css": "/anoopsajidpm/q-search/static/media/roboto-latin-900italic.bc833e72.woff"
+  }
+}
