@@ -47,7 +47,7 @@ class App extends React.Component {
       
       const filter = this.state.inputVal;
       
-      fetch('http://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
+      fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
       .then(res => res.json())
       .then((data) => {
         //console.log(data)
