@@ -36,6 +36,7 @@ class App extends React.Component {
         inputVal: '',
         ayahDetails: {},
         rawData: {},
+        searchError: false,
         searchBlockClass: 'search-wrapper',
         chkTrans: {'english': false, 'malayalam' : false}
       }
@@ -50,6 +51,7 @@ class App extends React.Component {
       .then(res => res.json())
       .then((data) => {
         //console.log(data)
+        this.state.searchError = false;
         this.setState({rawData :data});
         this.state.searchBlockClass='search-wrapper shrink';
         //this.setState({ mainResult: this.processData(data)});
@@ -147,12 +149,16 @@ class App extends React.Component {
   }
 
   render(){
-    
+    /* <Button onClick={this.onClick} size='medium' variant='contained' fullWidth={false}>
+            Search
+          </Button> */
     let listview;
     if(this.state.mainResult.length){
       listview = <Listview results={this.state.mainResult} details={this.state.ayahDetails}/>
     } else {
-      listview = <p className='error-txt'>The Referrence entered is Invalid</p>
+      if(this.state.searchError) {
+        listview = <p className='error-txt'>The Referrence entered is Invalid</p>
+      }
     }
   return (
     <div className="page-wrapper">
@@ -168,6 +174,7 @@ class App extends React.Component {
       
       <div className='content-wrapper'>
         <section className={this.state.searchBlockClass} id="search-block">
+        
           <TextField
             id="standard-error"
             label="Enter your search reference (E.g. 2.263)"
@@ -177,8 +184,9 @@ class App extends React.Component {
             autoFocus={true}
             onChange={evt =>this.updateInputVal(evt)}
             fullWidth={true}
-            
           />
+          
+         
           <FormGroup row>
           
             <p><strong>Trans: &nbsp;</strong></p>
@@ -199,9 +207,7 @@ class App extends React.Component {
               onChange={evt => this.chkSelectChange(evt)}
               
             />
-            <Button onClick={this.onClick} size='medium' variant='contained' fullWidth={false}>
-            Search
-          </Button>
+            <button onClick={this.onClick} value="Search" >Search</button>
           </FormGroup>
         </section>
         {listview}

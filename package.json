@@ -2,19 +2,25 @@
   "name": "q-search",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://anoopsajidpm.github.io/",
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "node-sass": "^4.12.0",
     "onsenui": "^2.10.8",
     "react": "^16.8.6",
+    "react-audio-player": "^0.11.1",
     "react-dom": "^16.8.6",
+    "react-hot-loader": "^4.8.8",
     "react-onsenui": "^1.11.2",
     "react-scripts": "3.0.1",
+    "reactjs-popup": "^1.4.1",
     "typeface-roboto": "0.0.54"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -32,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
   }
 }

@@ -9,10 +9,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 /*import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';*/
 //import Modal from '@material-ui/core/Modal';
+import Popup from "reactjs-popup";
 
 import IconButton from '@material-ui/core/IconButton';
 //import CommentIcon from '@material-ui/icons/Comment';
-import Slide from '@material-ui/core/Slide';
+//import Slide from '@material-ui/core/Slide';
 import './Listview.scss';
 
 //import Copier from '../../modules/Copier/Copier';
@@ -20,19 +21,20 @@ import './Listview.scss';
   class Listview extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {
-        copyText :''
+      this.state = {     
       }
     }
-    
+    componentWillUnmount = () => {
+        console.log('asdf');
+    }
     onClickNavigate = (evt) => {
       let curAyah = this.props.details.numberInSurah;
       let surah = this.props.details.number;
       let totAyah = this.props.details.numberOfAyahs;
       
-      console.log(curAyah);
+      /*console.log(curAyah);
       console.log(surah);
-      console.log(totAyah);
+      console.log(totAyah);*/
       switch(evt.target.value){
         case "Next":
           if(curAyah < totAyah){
@@ -60,20 +62,50 @@ import './Listview.scss';
           }
           console.log(surah + ':' + curAyah);
           break;
+        default:
+          console.log('asd');
+          break;
       }
     }
     render () {
       //console.log(this.props);
       const results = this.props.results;
       const details = this.props.details;
+      console.log(details);
+      const PopupOnFocus =  () => (
+        <Popup
+          trigger={<button value="More Info">More Info</button>}
+          on="click"
+          position="left center"
+          closeOnDocumentClick
+        >
+        <div><center>
+          <h2>{details.name}</h2>
+          <p>{details.englishName} | {details.englishNameTranslation}</p>
+           <p>Surah: {details.number} | Ayah: {details.numberInSurah}</p>
+           
+          </center>
+        </div>
+        </Popup>
+      )
       
+      
+      /*<ListItemSecondaryAction>
+            <IconButton hidden edge="end" aria-label="Comments">
+              
+            </IconButton>
+          
+          </ListItemSecondaryAction>*/
+          
     return (
       <div className="listview-wrapper">
       <button hidden onClick={this.onClickNavigate} value="Prev" >prev</button>
-      <center><h2>{details.name}</h2>
-      <p>{details.englishName} | {details.englishNameTranslation}</p>
-       <p>Surah: {details.number} | Ayah: {details.numberInSurah}</p>
-      </center>
+      
+      <section className="titles-wrapper">
+        <p>In Qur'an: <span>{details.ayahNumber}</span><br />In Surah: <span>{details.number}:{details.numberInSurah}</span></p>
+        
+        <PopupOnFocus />
+      </section>
         <button hidden onClick={this.onClickNavigate} value="Next" >next</button>
         <List component='ul' disablePadding={false} dense={false} >
           {results.map((value, index) =>
@@ -90,37 +122,23 @@ import './Listview.scss';
               }
               </ListItemText>
               
-              <ListItemSecondaryAction>
-            <IconButton edge="end" aria-label="Comments">
               
-            </IconButton>
-          
-          </ListItemSecondaryAction>
               
             </ListItem>
             )
           }
           
         </List>
-        
+        <center>
+          <audio controls="controls">
+            <source src={details.audio} type="audio/wav" />
+            Your browser does not support the <code>audio</code> element. 
+          </audio>
+        </center>
       </div>
     )
     }
 
   }  ;
-  //<p>{value.surah.number}:{value.numberInSurah} <br />{value.number}</p>
-  /*return (
-    <div>
-      <center><h1>Results</h1></center>
-      {results.map((result, index) => (
-        
-        <div className="card" key ={index}>
-          <div className="card-body">
-            <h4>{result.surah.englishName}</h4>
-            <p className="card-text">{result.number}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  )*/
+ 
 export default Listview
