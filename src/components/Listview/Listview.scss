@@ -7,9 +7,14 @@
 .verse-text {
 p{
   padding:0; margin:5px 0;
-  font-weight: bold;
-  font-size: 1.2em;
+  
   line-height: 1.5em;
+    
+  }
+  .txt-arabic{
+    text-align: right;
+    font-weight: bold;
+  font-size: 1.2em;
   }
 }
 .ayah-details{

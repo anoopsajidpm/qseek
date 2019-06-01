@@ -21,7 +21,7 @@ import './Listview.scss';
   class Listview extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {     
+      this.state = {
       }
     }
     componentWillUnmount = () => {
@@ -114,27 +114,22 @@ import './Listview.scss';
               { value.edition.type === 'translation' &&
                 <span className="ayah-details">{value.edition.englishName}</span>
               }
-              { value.edition.language === 'ar' && 
-                <p className="txt-arabic">{value.text}</p>
-              }
-              { value.edition.language !== 'ar' &&
-                <p>{value.text}</p>
-              }
+                <p className={value.edition.language === 'ar'? "txt-arabic" :''}>{value.text}</p>
+                  { value.edition.language === 'ar' && 
+                    <center>
+                      <audio controls="controls">
+                        <source src={details.audio} type="audio/wav" />
+                        Your browser does not support the <code>audio</code> element. 
+                      </audio>
+                    </center>
+                  }
               </ListItemText>
-              
-              
-              
             </ListItem>
             )
           }
           
         </List>
-        <center>
-          <audio controls="controls">
-            <source src={details.audio} type="audio/wav" />
-            Your browser does not support the <code>audio</code> element. 
-          </audio>
-        </center>
+        
       </div>
     )
     }
