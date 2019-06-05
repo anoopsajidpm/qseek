@@ -4,14 +4,14 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 /*import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemIcon from '@material-ui/core/ListItemIcon';*/
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+//import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 /*import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';*/
 //import Modal from '@material-ui/core/Modal';
 import Popup from "reactjs-popup";
 
-import IconButton from '@material-ui/core/IconButton';
+//import IconButton from '@material-ui/core/IconButton';
 //import CommentIcon from '@material-ui/icons/Comment';
 //import Slide from '@material-ui/core/Slide';
 import './Listview.scss';
@@ -32,9 +32,7 @@ import './Listview.scss';
       let surah = this.props.details.number;
       let totAyah = this.props.details.numberOfAyahs;
       
-      /*console.log(curAyah);
-      console.log(surah);
-      console.log(totAyah);*/
+      
       switch(evt.target.value){
         case "Next":
           if(curAyah < totAyah){
@@ -71,7 +69,7 @@ import './Listview.scss';
       //console.log(this.props);
       const results = this.props.results;
       const details = this.props.details;
-      console.log(details);
+      //console.log(details);
       const PopupOnFocus =  () => (
         <Popup
           trigger={<button value="More Info">More Info</button>}
