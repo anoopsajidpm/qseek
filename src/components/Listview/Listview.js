@@ -69,12 +69,14 @@ import './Listview.scss';
       //console.log(this.props);
       const results = this.props.results;
       const details = this.props.details;
+      
+      if(!this.props.results) return null;
       //console.log(details);
       const PopupOnFocus =  () => (
         <Popup
           trigger={<button value="More Info">More Info</button>}
           on="click"
-          position="left center"
+          position="right center"
           closeOnDocumentClick
         >
         <div><center>
@@ -110,7 +112,7 @@ import './Listview.scss';
             <ListItem key={index} className="no-padding">
               <ListItemText className="verse-text" >
               { value.edition.type === 'translation' &&
-                <span className="ayah-details">{value.edition.englishName}</span>
+                <span className="ayah-details">{value.edition.language}</span>
               }
                 <p className={value.edition.language === 'ar'? "txt-arabic" :''}>{value.text}</p>
                   { value.edition.language === 'ar' && 

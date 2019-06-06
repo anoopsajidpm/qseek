@@ -90,7 +90,7 @@ h1{
 }
 .ayah-input-wrapper{
   margin-bottom:10px;
-  
+  width: 100%;
   >div{
     width:calc(40% - 6px);
     position: relative;
@@ -99,30 +99,41 @@ h1{
   .surah-name{
     position: absolute;
     top: 23px;
-    left: 4px;
-    padding: 2px 5px;
+    
+    left: 0;
+    right: 30px;
+    bottom: 2px;
     background-color: white;
+  }
+  
+  .ayah-total{
+    position: absolute;
+    top: 24px;
+    right: 13px;
+    background-color: white;
+    color: #aaa;
   }
 }
 .surah-select{
   height:30px;
-  width:100%; //calc(50% - 2px);
+  width:calc(100% - 10px); //calc(50% - 2px);
   margin:0;
   padding:0;
-  border:solid 1px #ccc;
+  border:none 0; //solid 1px #ccc;
+  border-right: solid 1px #ccc;
 }
 .input-ayah{
   height:30px;
-  width:100%;//calc(50% - 12px);
+  width:calc(100% - 12px);
   padding:0 5px; margin:0;
-  border:solid 1px #ccc;
+  border: none 0;
+  border-bottom:solid 1px #ccc;
   box-sizing: border-box;
 }
 .search-btn{
   width:20%;
   margin-left:10px;
-  align-self: flex-end;
-  height: 30px;
+  
 }
 
 .toggle-btn{
@@ -130,8 +141,10 @@ h1{
   border: solid 1px #ccc;
   color: #333;
   margin: 0 3px;
+  padding: 5px 8px;
+  border-radius: 7px;
   &.selected {
-    background-color: #333;
+    background-color: #8ebc00; //#333;
     color: #fff;
     border: solid 1px #fff;
   }

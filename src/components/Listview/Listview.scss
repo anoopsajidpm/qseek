@@ -22,22 +22,24 @@ p{
   display:block;
   height: auto;
   width: 100%;
-  background-color: #e7e7e7;
+  //background-color: #e7e7e7;
+  border-bottom: solid 1px #ccc;
   padding: 5px;
 }
 .titles-wrapper{
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: flex-start; //space-between;
   height: 40px;
-  background-color: #c4e4ff;
+  background-color: #f6f6f6; //#c4e4ff;
   margin-top: 20px;
   color: #1d1d1d;
   padding: 5px 10px;
   p{
     padding:0; 
     margin:0;
+    margin-right: 10px;
     span{
       font-weight: bold;
     }

@@ -27,6 +27,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Listview from './components/Listview/Listview';
 import Loader from './components/Loader/Loader';
+import Langs from './langs.json';
 //import Checkbox from './components/Checkbox/Checkbox';
 
 class App extends React.Component {
@@ -44,13 +45,18 @@ class App extends React.Component {
         preloader: true,
         chkTrans: {'english': false, 'malayalam' : false}
       }
+      //const langs = JSON.parse('./langs.json');
       this.handleLoad = this.handleLoad.bind(this);
       this.chkSelectChange = this.chkSelectChange.bind(this);
+      
     }
     
     componentDidMount() {
+      //console.log(this.langs);
       window.addEventListener('load', this.handleLoad);
+      //this.getLangs();
     }
+    
     
     handleLoad(){
       this.setState({
@@ -77,37 +83,70 @@ class App extends React.Component {
         })
       )
     }
-    onClick = (event) => {
-      
+    
+    searchForAyah() {
       let filter = this.state.inputVal;
+      /*if(this.state.selectedSurah && this.state.selectedSurah.number){
+        filter = this.state.selectedSurah.number + ":" + filter;
+      }*/
+      fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
+        .then(res => res.json())
+        .then((data) => {
+          this.setState({
+            searchError:'',
+            rawData :data,
+            searchBlockClass:'search-wrapper shrink'
+          });
+          console.log(data);
+          this.processData(data);
+          
+        })
+        .catch(
+          this.setState({
+           preloader: false,
+           searchError: 'err'
+          })
+        )
+    }
+    onClick = (event) => {
       this.setState({
          preloader: true
       });
-      fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({
-          searchError:'',
-          rawData :data,
-          searchBlockClass:'search-wrapper shrink'
-        });
-        console.log(data);
-        this.processData(data);
-        this.setState({
-          preloader: false
-        });
-      })
-      .catch(
-        this.setState({
-         preloader: false,
-         searchError: 'err'
-        })
-      )
+      let filter = this.state.inputVal;
+      if(filter.split(':').length <= 1){
+        if(this.state.selectedSurah.number){
+          filter = this.state.selectedSurah.number + ":" + filter;
+        }
+      }
+      
+      if(filter){
+      /*if(this.state.selectedSurah && this.state.selectedSurah.number){
+        filter = this.state.selectedSurah.number + ":" + filter;
+      }*/
+        fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
+          .then(res => res.json())
+          .then((data) => {
+            this.setState({
+              searchError:'',
+              rawData :data,
+              searchBlockClass:'search-wrapper shrink'
+            });
+            console.log(data);
+            this.processData(data);
+            
+          })
+          .catch(
+            this.setState({
+             preloader: false,
+             searchError: 'err'
+            })
+          )
+      } 
     }
     
     getErrMessage(src) {
       let message = '';
-      let inp = this.state.inputVal;
+      //let inp = this.state.inputVal;
       let splitV = this.state.inputVal.split(':');
       let curSurah = this.state.selectedSurah;
       if(src === 'list'){
@@ -145,8 +184,8 @@ class App extends React.Component {
         mainResult: []
       });
       
-      console.log(this.state.chkTrans.english);
-      console.log(this.state.chkTrans.malayalam);
+      //console.log(this.state.chkTrans.english);
+      //console.log(this.state.chkTrans.malayalam);
         result.data.map(item => {
             let filteredItem = null;
             var flag = true;
@@ -198,7 +237,11 @@ class App extends React.Component {
         if(audio){
           details = Object.assign(details, {'audio': audio});
         }
-        this.setState({ ayahDetails: details, mainResult: res});
+        this.setState({ 
+          ayahDetails: details, 
+          mainResult: res, 
+          preloader: false
+        });
        
         
         return true;
@@ -213,29 +256,25 @@ class App extends React.Component {
     changeSurah = (evt) => {
       console.log(evt.target.value);
       let selSurah = [];
-      let splitV = Array(2);
-      
-      splitV = this.state.inputVal.split(':');
-      
-      
-      if(splitV.length > 1){
-        splitV[0] = evt.target.value;
-      } else {
-        splitV[0] = evt.target.value;
-        splitV.push("1");
+      this.setState({
+        selectedSurah: null
+      });
+      if(evt.target.value > 0){
+        selSurah = this.state.surahList.filter(surah => Number(surah.number) === Number(evt.target.value));
+        
+        this.setState({
+          selectedSurah: selSurah[0]
+        });
       }
-      //console.log(splitV);
+      console.log(selSurah);
       
-      this.setState({
-        inputVal: (splitV[0] + ":" + splitV[1])
-      });
-      selSurah = this.state.surahList.filter(surah => surah.number == evt.target.value);
-      //console.log(selSurah);
-      this.setState({
-        selectedSurah: selSurah[0]
-      });
+      this.setState({ 
+        ayahDetails: {},
+        mainResult: [],
+        inputVal: 1
+      }, () => {this.ayahInput.focus()});
       
-      this.ayahInput.focus();
+      //this.ayahInput.focus();
      
     }
     chkSelectChange = evt => {
@@ -245,6 +284,7 @@ class App extends React.Component {
       let mal = Boolean(this.state.chkTrans.malayalam);
       console.log(evt.target.value);
       //console.log(evt.target.checked);
+      
       
       
       switch(targ.value){
@@ -291,20 +331,25 @@ class App extends React.Component {
       
     }
 
+findLang(array, title) {
+//console.log('find');
+  
+      let result = array.filter(item => item.code === title );
+      if(result.length){
+        return result[0];
+      } else {
+        return false;
+      }
+}
   render(){
     let listview;
+    //console.log(this.langs);
     if(this.state.mainResult.length){
-      listview = <Listview results={this.state.mainResult} details={this.state.ayahDetails}/>
-    } /*else {
-      if(this.state.searchError) {
-        listview = <p className='error-txt'>The Referrence entered is Invalid</p>
-      }
-    }*/
-    
-      const surahs = this.state.surahList;
-      const curSurah = this.state.selectedSurah;
+      listview = <Listview key={this.state.ayahDetails && this.state.number} results={this.state.mainResult} details={this.state.ayahDetails}/>
+    }
+    console.log(this.findLang(Langs, 'ml'));
+    const surahs = this.state.surahList;
       
-           //console.log(this.state.selectedSurah);
            
   return (
     <div className="page-wrapper">
@@ -320,13 +365,13 @@ class App extends React.Component {
       
       <div className='content-wrapper'>
         <section className={this.state.searchBlockClass} id="search-block">
-        <div className="row-flex ayah-input-wrapper">
+        <div className="row-flex ayah-input-wrapper" >
           <div className="col-flex">
-            <label htmlFor="surah-list">Select Surah:</label>
+            <label htmlFor="surah-list">Surah:</label>
             <select id="surah-list" onChange={evt => this.changeSurah(evt)} className="surah-select">
-              <option value="0" >Select Surah</option>
+              <option value="0" >--Select--</option>
               { 
-                surahs.map(el => <option value={el.number} key={el.number} > {el.number} - {el.englishName} </option>)
+                this.state.surahList.map(el => <option value={el.number} key={el.number} > {el.number} - {el.englishName} </option>)
               }
             </select>
             {this.state.selectedSurah.englishName && 
@@ -334,16 +379,19 @@ class App extends React.Component {
             }
           </div>
           <div className="col-flex">
-          <label htmlFor="ayah-input" >Enter Ayah No:</label>
-          <input type="text"
-            value={this.state.inputVal}
-            onChange={evt =>this.updateInputVal(evt)}
-            placeholder="Enter ayah to search"
-            ref={(input) => { this.ayahInput = input; }} 
-            className="input-ayah"
+            <label htmlFor="ayah-input" >Ayah Number:</label>
+            <input type="number"
+              value={this.state.inputVal}
+              onChange={evt =>this.updateInputVal(evt)}
+              placeholder="Enter your search"
+              ref={(input) => { this.ayahInput = input; }} 
+              className="input-ayah"
             />
+            {this.state.selectedSurah.englishName && 
+              <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs}</label>
+            }
           </div>
-          <button onClick={this.onClick} value="Search" className="search-btn">Search</button>
+          <button type="submit" onClick={this.onClick} value="Search" className="search-btn">Search</button>
          </div> 
          <div className="trans-wrapper">
             <label>Translations: </label>
