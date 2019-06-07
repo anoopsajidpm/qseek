@@ -102,7 +102,7 @@ import './Listview.scss';
       <button hidden onClick={this.onClickNavigate} value="Prev" >prev</button>
       
       <section className="titles-wrapper">
-        <p>In Qur'an: <span>{details.ayahNumber}</span><br />In Surah: <span>{details.number}:{details.numberInSurah}</span></p>
+        <p>Ref: <span>{details.number}:{details.numberInSurah}</span></p>
         
         <PopupOnFocus />
       </section>

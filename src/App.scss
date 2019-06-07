@@ -91,10 +91,13 @@ h1{
 .ayah-input-wrapper{
   margin-bottom:10px;
   width: 100%;
+  
   >div{
     width:calc(40% - 6px);
     position: relative;
-    
+    >label{
+      color: #999;
+    }
   }
   .surah-name{
     position: absolute;
@@ -104,6 +107,8 @@ h1{
     right: 30px;
     bottom: 2px;
     background-color: white;
+    color: #1d1d1d;
+    font-weight: bold;
   }
   
   .ayah-total{
@@ -129,6 +134,8 @@ h1{
   border: none 0;
   border-bottom:solid 1px #ccc;
   box-sizing: border-box;
+  font-weight: bold;
+  font-size:1.1em;
 }
 .search-btn{
   width:20%;
