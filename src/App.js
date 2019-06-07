@@ -28,6 +28,7 @@ import Typography from '@material-ui/core/Typography';
 import Listview from './components/Listview/Listview';
 import Loader from './components/Loader/Loader';
 import Langs from './langs.json';
+import Popup from "reactjs-popup";
 //import Checkbox from './components/Checkbox/Checkbox';
 
 class App extends React.Component {
@@ -59,9 +60,12 @@ class App extends React.Component {
     
     
     handleLoad(){
+      console.log(Langs);
       this.setState({
          preloader: true
       });
+      
+       
       fetch('https://api.alquran.cloud/v1/surah')
       .then(res => res.json())
       .then((data) => {
@@ -81,7 +85,8 @@ class App extends React.Component {
           preloader: false,
           searchError: this.getErrMessage('list')
         })
-      )
+      ) 
+     
     }
     
     searchForAyah() {
@@ -253,6 +258,27 @@ class App extends React.Component {
         inputVal: evt.target.value
       });
     }
+    selectSurah = (evt) => {
+      let selSurah = [];
+      this.setState({
+        selectedSurah: null
+      });
+      if(evt.target.value > 0){
+        selSurah = this.state.surahList.filter(surah => Number(surah.number) === Number(evt.target.value));
+        
+        this.setState({
+          selectedSurah: selSurah[0]
+        });
+      }
+      console.log(selSurah);
+      
+      this.setState({ 
+        ayahDetails: {},
+        mainResult: [],
+        inputVal: 1
+      }, () => {this.ayahInput.focus()});
+      
+    }
     changeSurah = (evt) => {
       console.log(evt.target.value);
       let selSurah = [];
@@ -274,8 +300,6 @@ class App extends React.Component {
         inputVal: 1
       }, () => {this.ayahInput.focus()});
       
-      //this.ayahInput.focus();
-     
     }
     chkSelectChange = evt => {
       let targ = evt.target;
@@ -341,16 +365,45 @@ findLang(array, title) {
         return false;
       }
 }
+
   render(){
+    
+    /* <select id="surah-list" onChange={evt => this.changeSurah(evt)} className="surah-select">
+              <option value="0" >--Select--</option>
+              { 
+                surahs.map(el => <option value={el.number} key={el.number} > {el.number} - {el.englishName} </option>)
+              }
+            </select>
+            */
     let listview;
     //console.log(this.langs);
     if(this.state.mainResult.length){
       listview = <Listview key={this.state.ayahDetails && this.state.number} results={this.state.mainResult} details={this.state.ayahDetails}/>
     }
-    console.log(this.findLang(Langs, 'ml'));
+    //console.log(this.findLang(Langs, 'ml'));
+    let surah = {};
     const surahs = this.state.surahList;
       
-           
+          const SurahPopup =  () => (
+         
+            <Popup
+              trigger={<button value="Surahs" className="surah-button">...</button>}
+              on="click"
+              position="center center"
+              modal
+              closeOnDocumentClick
+            >
+            <div className="surah-wrapper">
+              <h3>Select Surah:</h3>
+              <ul>
+              {
+                surahs.map(surah => <li value={surah.number} key={surah.number} onClick={this.selectSurah}>{surah.number} - {surah.englishName} </li>)
+              }
+              </ul>
+            </div>
+            </Popup>
+         
+          )
   return (
     <div className="page-wrapper">
       <header>
@@ -361,6 +414,9 @@ findLang(array, title) {
             </Typography>
           </Toolbar>
         </AppBar>
+        
+          
+                
       </header>
       
       <div className='content-wrapper'>
@@ -368,12 +424,8 @@ findLang(array, title) {
         <div className="row-flex ayah-input-wrapper" >
           <div className="col-flex">
             <label htmlFor="surah-list">Surah:</label>
-            <select id="surah-list" onChange={evt => this.changeSurah(evt)} className="surah-select">
-              <option value="0" >--Select--</option>
-              { 
-                this.state.surahList.map(el => <option value={el.number} key={el.number} > {el.number} - {el.englishName} </option>)
-              }
-            </select>
+            
+            <SurahPopup />
             {this.state.selectedSurah.englishName && 
               <label ref={(sur) => { this.surahLabel = sur; }} className="surah-name">{this.state.selectedSurah.englishName}</label>
             }

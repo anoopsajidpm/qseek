@@ -99,14 +99,18 @@ h1{
       color: #999;
     }
   }
+  .surah-button{
+    height:30px;
+    text-align: right;
+    margin-right:10px;
+  }
   .surah-name{
     position: absolute;
     top: 23px;
-    
-    left: 0;
+    left: 5px;
     right: 30px;
     bottom: 2px;
-    background-color: white;
+    /* background-color: white; */
     color: #1d1d1d;
     font-weight: bold;
   }
@@ -158,4 +162,34 @@ h1{
 }
 .trans-wrapper{
   align-self: flex-start;
+}
+.popup-content {
+border-radius: 10px;
+}
+.surah-wrapper{
+  width:100%;    
+  border-radius: 5px;
+  h3{
+    width: 100%;
+    text-align:center;
+  }
+  ul{
+  max-height:300px;
+  overflow: auto;
+    margin:0;padding: 0;
+    //padding:10px;
+    li{
+      list-style: none;
+      min-height:30px;
+      vertical-align:middle;
+      padding:10px;
+      cursor: pointer;
+      &:nth-child(even){
+        background-color:#f6f6f6;
+      }
+      &:hover{
+        background-color:#e7e7e7;
+      }
+    }
+  }
 }
