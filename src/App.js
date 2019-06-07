@@ -113,7 +113,7 @@ class App extends React.Component {
          preloader: true
       });
       let filter = this.state.inputVal;
-      if(filter.split(':').length <= 1){
+      if(String(filter).split(':').length <= 1){
         if(this.state.selectedSurah.number){
           filter = this.state.selectedSurah.number + ":" + filter;
         }
