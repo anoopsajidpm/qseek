@@ -43,12 +43,13 @@ class App extends React.Component {
         searchError: '',
         searchBlockClass: 'search-wrapper',
         selectedSurah: {},
+        selectedTrans: '',
         preloader: true,
         chkTrans: {'english': false, 'malayalam' : false}
       }
       //const langs = JSON.parse('./langs.json');
       this.handleLoad = this.handleLoad.bind(this);
-      this.chkSelectChange = this.chkSelectChange.bind(this);
+      //this.chkSelectChange = this.chkSelectChange.bind(this);
       
     }
     
@@ -279,7 +280,7 @@ class App extends React.Component {
       }, () => {this.ayahInput.focus()});
       
     }
-    changeSurah = (evt) => {
+    /*changeSurah = (evt) => {
       console.log(evt.target.value);
       let selSurah = [];
       this.setState({
@@ -300,8 +301,38 @@ class App extends React.Component {
         inputVal: 1
       }, () => {this.ayahInput.focus()});
       
+    }*/
+    selectLang = evt => {
+      console.log(evt.target.getAttribute('data-value'));
+      
+      let lng = evt.target.getAttribute('data-value');
+      let eng = this.state.chkTrans.english;
+      let mal = this.state.chkTrans.malayalam;
+      switch (lng){
+        case 'en':
+          eng = !eng;
+          
+            
+          break;
+        case 'ml':
+          mal = !mal;
+          break;
+        default:
+      }
+      this.setState({
+        chkTrans:{
+          english: eng,
+          malayalam: mal
+        }
+      }, () => {
+        if(this.state.rawData && this.state.rawData.data){
+          this.processData(this.state.rawData);
+        }
+      });
+      
     }
-    chkSelectChange = evt => {
+    
+    /*chkSelectChange = evt => {
       let targ = evt.target;
       //let status; //this.state.chkTrans.malayalam;
       let eng = Boolean(this.state.chkTrans.english);
@@ -353,7 +384,7 @@ class App extends React.Component {
       
       
       
-    }
+    }*/
 
 findLang(array, title) {
 //console.log('find');
@@ -374,6 +405,8 @@ findLang(array, title) {
                 surahs.map(el => <option value={el.number} key={el.number} > {el.number} - {el.englishName} </option>)
               }
             </select>
+            
+            <button className="toggle-btn" value="malayalam" onClick={this.chkSelectChange}>Mal</button>
             */
     let listview;
     //console.log(this.langs);
@@ -383,7 +416,29 @@ findLang(array, title) {
     //console.log(this.findLang(Langs, 'ml'));
     let surah = {};
     const surahs = this.state.surahList;
-      
+    const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
+    //console.log(langs);
+    
+      const LangPopup =  () => (
+        <Popup
+          trigger={<a href="javascript:;" className="toggle-btn" value="Translation" >Lang</a>}
+          on="click"
+          position="center center"
+          modal
+          closeOnDocumentClick
+        >
+        <div className="surah-wrapper">
+          <h3>Select Language:</h3>
+          <ul>
+          {
+            filteredLangs.map(lng=> 
+              <li data-value={lng.code} key={lng.code} onClick={this.selectLang} >{lng.code} - {lng.name} </li>
+            )
+          }
+          </ul>
+        </div>
+        </Popup>
+      )
           const SurahPopup =  () => (
          
             <Popup
@@ -404,6 +459,8 @@ findLang(array, title) {
             </Popup>
          
           )
+          
+          
   return (
     <div className="page-wrapper">
       <header>
@@ -446,9 +503,9 @@ findLang(array, title) {
           <button type="submit" onClick={this.onClick} value="Search" className="search-btn">Search</button>
          </div> 
          <div className="trans-wrapper">
-            <label>Translations: </label>
-            <button className="toggle-btn" value="english" onClick={this.chkSelectChange}>Eng</button>
-            <button className="toggle-btn" value="malayalam" onClick={this.chkSelectChange}>Mal</button>
+            <LangPopup />
+            
+            
             
           </div>
           
