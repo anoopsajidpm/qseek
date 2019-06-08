@@ -45,7 +45,10 @@ class App extends React.Component {
         selectedSurah: {},
         selectedTrans: '',
         preloader: true,
-        chkTrans: {'english': false, 'malayalam' : false}
+        chkTrans: {'english': false, 'malayalam' : false},
+        q_edition_ar: 'quran-simple-enhanced',
+        q_edition_trans: ['en.asad', 'en.pickthall', 'ml.abdulhameed'],
+        q_edition_audio: 'ar.alafasy'
       }
       //const langs = JSON.parse('./langs.json');
       this.handleLoad = this.handleLoad.bind(this);
@@ -61,7 +64,7 @@ class App extends React.Component {
     
     
     handleLoad(){
-      console.log(Langs);
+      //console.log(Langs);
       this.setState({
          preloader: true
       });
@@ -90,11 +93,13 @@ class App extends React.Component {
      
     }
     
-    searchForAyah() {
+    searchForAyah_2() {
       let filter = this.state.inputVal;
       /*if(this.state.selectedSurah && this.state.selectedSurah.number){
         filter = this.state.selectedSurah.number + ":" + filter;
       }*/
+      
+
       fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
         .then(res => res.json())
         .then((data) => {
@@ -114,40 +119,47 @@ class App extends React.Component {
           })
         )
     }
-    onClick = (event) => {
+
+    searchForAyah = (event) => {
       this.setState({
          preloader: true
       });
       let filter = this.state.inputVal;
+      let q_editions = (this.state.q_edition_ar + ',' + this.state.q_edition_trans + ',' + this.state.q_edition_audio) ;
+      
+      //console.log(q_editions);
       if(String(filter).split(':').length <= 1){
         if(this.state.selectedSurah.number){
           filter = this.state.selectedSurah.number + ":" + filter;
         }
       }
       
-      if(filter){
-      /*if(this.state.selectedSurah && this.state.selectedSurah.number){
-        filter = this.state.selectedSurah.number + ":" + filter;
-      }*/
-        fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
+      if(!filter){
+        this.setState({
+          preloader: false,
+          searchError: 'no input'
+        })
+        return false;
+      }
+        fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/' + q_editions)
           .then(res => res.json())
           .then((data) => {
             this.setState({
               searchError:'',
               rawData :data,
               searchBlockClass:'search-wrapper shrink'
-            });
-            console.log(data);
-            this.processData(data);
+            }, () => this.processData(data));
+            
+            
             
           })
           .catch(
             this.setState({
              preloader: false,
-             searchError: 'err'
+             searchError: 'data error'
             })
           )
-      } 
+      
     }
     
     getErrMessage(src) {
@@ -442,7 +454,7 @@ findLang(array, title) {
           const SurahPopup =  () => (
          
             <Popup
-              trigger={<button value="Surahs" className="surah-button">...</button>}
+              trigger={<button value="Surahs" className="surah-button">Surah</button>}
               on="click"
               position="center center"
               modal
@@ -460,7 +472,7 @@ findLang(array, title) {
          
           )
           
-          
+          /*<label htmlFor="surah-list">Surah:</label>*/
   return (
     <div className="page-wrapper">
       <header>
@@ -471,28 +483,25 @@ findLang(array, title) {
             </Typography>
           </Toolbar>
         </AppBar>
-        
-          
-                
       </header>
+      <LangPopup />
       
-      <div className='content-wrapper'>
         <section className={this.state.searchBlockClass} id="search-block">
         <div className="row-flex ayah-input-wrapper" >
-          <div className="col-flex">
-            <label htmlFor="surah-list">Surah:</label>
+          <div className="row-flex">
+            
             
             <SurahPopup />
             {this.state.selectedSurah.englishName && 
-              <label ref={(sur) => { this.surahLabel = sur; }} className="surah-name">{this.state.selectedSurah.englishName}</label>
+              <p ref={(sur) => { this.surahLabel = sur; }} className="surah-name">{this.state.selectedSurah.number}:</p>
             }
           </div>
-          <div className="col-flex">
-            <label htmlFor="ayah-input" >Ayah Number:</label>
+          <div className="ayah-input">
+            <label hidden>Ayah Number:</label>
             <input type="number"
               value={this.state.inputVal}
               onChange={evt =>this.updateInputVal(evt)}
-              placeholder="Enter your search"
+              placeholder="Enter Ayah No"
               ref={(input) => { this.ayahInput = input; }} 
               className="input-ayah"
             />
@@ -500,16 +509,12 @@ findLang(array, title) {
               <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs}</label>
             }
           </div>
-          <button type="submit" onClick={this.onClick} value="Search" className="search-btn">Search</button>
+          <button type="submit" onClick={this.searchForAyah} value="Search" className="search-btn">Search</button>
          </div> 
-         <div className="trans-wrapper">
-            <LangPopup />
-            
-            
-            
-          </div>
+        
           
         </section>
+      <div className='content-wrapper'>
         {listview}
       </div>
       
