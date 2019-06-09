@@ -53,9 +53,27 @@ class App extends React.Component {
       //const langs = JSON.parse('./langs.json');
       this.handleLoad = this.handleLoad.bind(this);
       //this.chkSelectChange = this.chkSelectChange.bind(this);
+      this.resetView = this.resetView.bind(this);
       
     }
     
+    resetView() {
+      //alert('asdf');
+      this.setState({
+        ayahDetails: null,
+        mainResult: [],
+        rawData: null,
+        searchError: '',
+        selectedSurah: {},
+        selectedTrans: '',
+        preloader: false,
+        chkTrans: {'english': false, 'malayalam' : false},
+        q_edition_ar: 'quran-simple-enhanced',
+        q_edition_trans: ['en.asad', 'en.pickthall', 'ml.abdulhameed'],
+        q_edition_audio: 'ar.alafasy'
+
+      })
+    }
     componentDidMount() {
       //console.log(this.langs);
       window.addEventListener('load', this.handleLoad);
@@ -491,18 +509,24 @@ findLang(array, title) {
          
           )
           
-          /*<label htmlFor="surah-list">Surah:</label>*/
-          const selectedSurah = this.state.selectedSurah
-  return (
-    <div className="page-wrapper">
-      <header>
-        <AppBar position="static" color="default">
+          /*<label htmlFor="surah-list">Surah:</label>
+          <AppBar position="static" color="default">
           <Toolbar>
             <Typography variant="h1" size="small" color="inherit">
               Q-Search
             </Typography>
           </Toolbar>
         </AppBar>
+          */
+          const selectedSurah = this.state.selectedSurah
+  return (
+    <div className="page-wrapper">
+      <header className="App-header">
+       
+       <h1 onClick={this.resetView}>
+              Q-Search
+            </h1>
+            
       </header>
       {
         selectedSurah.number && 
@@ -543,7 +567,8 @@ findLang(array, title) {
               <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs}</label>
             }
           </div>
-          <button type="submit" onClick={this.searchForAyah} value="Search" className="search-btn">Search</button>
+          <a href="javascript:;" onClick={this.searchForAyah} role="button" className="search-btn">Search</a>
+          
          </div> 
         
           

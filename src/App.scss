@@ -10,14 +10,21 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color:#5AC7F4; // #282c34;
+ // min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 40px;
   justify-content: center;
   font-size: 1em; //calc(10px + 2vmin);
   color: white;
+  vertical-align: middle;
+  h1{
+    font-size:1.5em !important;
+    margin:0;
+    padding:0;
+  }
 }
 h1{
   font-size: 1.2em !important;
@@ -184,10 +191,18 @@ h1{
   }
   
 }
+.app-title{
+  
+}
 .search-btn{
   flex: 0 0 60px;
   margin-left:10px;
-  
+  background: url(./assets/images/search-icon.svg) no-repeat center center;
+  background-size: 80%;
+  width: 60px;
+  text-indent: -99999px;
+  border-left: solid 1px #666;
+
 }
 
 .align-self-center {
