@@ -287,8 +287,7 @@ class App extends React.Component {
       
       this.setState({ 
         ayahDetails: {},
-        mainResult: [],
-        inputVal: 1
+        mainResult: [], 
       }, () => {this.ayahInput.focus()});
       
     }
@@ -322,12 +321,12 @@ class App extends React.Component {
       let mal = this.state.chkTrans.malayalam;
       switch (lng){
         case 'en':
-          eng = !eng;
-          
-            
+          eng = true; //!eng;
+          mal = false;
           break;
         case 'ml':
-          mal = !mal;
+          mal = true; //!mal;
+          eng = false;
           break;
         default:
       }
@@ -430,10 +429,20 @@ findLang(array, title) {
     const surahs = this.state.surahList;
     const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
     //console.log(langs);
+    let selectedTrans = '';
+    if(this.state.chkTrans.english){
+      selectedTrans = 'English';
+    } else {
+      if(this.state.chkTrans.malayalam){
+        selectedTrans = 'Malayalam';
+      } else {
+        selectedTrans = 'Select Language';
+      }
+    }
     
-      const LangPopup =  () => (
+            const LangPopup =  () => (
         <Popup
-          trigger={<a href="javascript:;" className="toggle-btn" value="Translation" >Lang</a>}
+          trigger={<a href="javascript:;" className="toggle-btn align-self-center" value="Translation" >Translation: {selectedTrans} </a>}
           on="click"
           position="center center"
           modal
@@ -451,14 +460,24 @@ findLang(array, title) {
         </div>
         </Popup>
       )
-          const SurahPopup =  () => (
-         
+
+        /*const TipsSurah = () => (<Popup
+              trigger=""
+              position="right top"
+              open="1"
+              closeOnDocumentClick
+              id="tip-surah"
+            ><span>Tap to select Surah</span>
+            </Popup>
+        )*/
+      const SurahPopup =  () => (
             <Popup
-              trigger={<button value="Surahs" className="surah-button">Surah</button>}
+              trigger={<a href="javascript:;" value="Surahs" className="surah-button">Surah</a>}
               on="click"
               position="center center"
               modal
               closeOnDocumentClick
+              className="surah-popup"
             >
             <div className="surah-wrapper">
               <h3>Select Surah:</h3>
@@ -473,6 +492,7 @@ findLang(array, title) {
           )
           
           /*<label htmlFor="surah-list">Surah:</label>*/
+          const selectedSurah = this.state.selectedSurah
   return (
     <div className="page-wrapper">
       <header>
@@ -484,14 +504,25 @@ findLang(array, title) {
           </Toolbar>
         </AppBar>
       </header>
-      <LangPopup />
+      {
+        selectedSurah.number && 
+      <section className="titles-wrapper">
+        
+          <h2 className="surah-title">{selectedSurah.englishName} | {selectedSurah.name}</h2>
+          <p>{selectedSurah.englishNameTranslation}</p>
+           <p>Surah: <span className="clearer">{selectedSurah.number}</span> | Ayah: <span className="clearer">{this.state.inputVal ? this.state.inputVal : 'Not Selected'}</span></p>
+            <LangPopup />        
+          
+      </section>
+  }
+      
       
         <section className={this.state.searchBlockClass} id="search-block">
         <div className="row-flex ayah-input-wrapper" >
           <div className="row-flex">
             
-            
             <SurahPopup />
+            <div className="triangle-right"><div className="inner"></div></div>
             {this.state.selectedSurah.englishName && 
               <p ref={(sur) => { this.surahLabel = sur; }} className="surah-name">{this.state.selectedSurah.number}:</p>
             }
@@ -504,6 +535,9 @@ findLang(array, title) {
               placeholder="Enter Ayah No"
               ref={(input) => { this.ayahInput = input; }} 
               className="input-ayah"
+              pattern="^[0-9]*$"
+              min="1"
+              max={this.state.selectedSurah.numberOfAyahs}
             />
             {this.state.selectedSurah.englishName && 
               <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs}</label>

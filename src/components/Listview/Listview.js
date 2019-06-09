@@ -10,7 +10,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';*/
 //import Modal from '@material-ui/core/Modal';
 import Popup from "reactjs-popup";
-
+import Langs from '../../langs.json';
 //import IconButton from '@material-ui/core/IconButton';
 //import CommentIcon from '@material-ui/icons/Comment';
 //import Slide from '@material-ui/core/Slide';
@@ -65,12 +65,18 @@ import './Listview.scss';
           break;
       }
     }
+     getLangName(code) {
+            let lang = Langs.filter(item => item.code === code);
+            console.log(lang);
+            return (lang[0].name !== 'English' ? lang[0].name + ' | ' + lang[0].nativeName : lang[0].name);
+          }
     render () {
       //console.log(this.props);
       const results = this.props.results;
       const details = this.props.details;
       
       if(!this.props.results) return null;
+      
       //console.log(details);
       const PopupOnFocus =  () => (
         <Popup
@@ -95,34 +101,36 @@ import './Listview.scss';
               
             </IconButton>
           
-          </ListItemSecondaryAction>*/
-          
+          </ListItemSecondaryAction>
+          <p>Ref: <span>{details.number}:{details.numberInSurah}</span></p>
+        
+        <PopupOnFocus />
+          */
+         
     return (
       <div className="listview-wrapper">
       <button hidden onClick={this.onClickNavigate} value="Prev" >prev</button>
       
-      <section className="titles-wrapper">
-        <p>Ref: <span>{details.number}:{details.numberInSurah}</span></p>
-        
-        <PopupOnFocus />
-      </section>
+      
         <button hidden onClick={this.onClickNavigate} value="Next" >next</button>
-        <List component='ul' disablePadding={false} dense={false} >
+        <List component='ul' disablePadding={false} dense={false} className="verse-list-ul">
           {results.map((value, index) =>
             <ListItem key={index} className="no-padding">
               <ListItemText className="verse-text" >
               { value.edition.type === 'translation' &&
-                <span className="ayah-details">{value.edition.language}</span>
+                <span className="ayah-details">{this.getLangName(value.edition.language)}</span>
               }
-                <p className={value.edition.language === 'ar'? "txt-arabic" :''}>{value.text}</p>
-                  { value.edition.language === 'ar' && 
-                    <center>
-                      <audio controls="controls">
+
+              { value.edition.language === 'ar' && 
+                    
+                      <audio controls="controls" className="q-audio-player">
                         <source src={details.audio} type="audio/wav" />
                         Your browser does not support the <code>audio</code> element. 
                       </audio>
-                    </center>
+                  
                   }
+                <p className={value.edition.language === 'ar'? "txt-arabic" :''}>{value.text}</p>
+                  
               </ListItemText>
             </ListItem>
             )
