@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/q-search/static/css/main.f773c3b1.chunk.css",
+    "main.css": "/q-search/static/css/main.d3ced12c.chunk.css",
     "main.js": "/q-search/static/js/main.48b33d3c.chunk.js",
     "main.js.map": "/q-search/static/js/main.48b33d3c.chunk.js.map",
     "runtime~main.js": "/q-search/static/js/runtime~main.9fdd85b2.js",
@@ -9,10 +9,10 @@
     "static/js/2.7eb30762.chunk.js": "/q-search/static/js/2.7eb30762.chunk.js",
     "static/js/2.7eb30762.chunk.js.map": "/q-search/static/js/2.7eb30762.chunk.js.map",
     "index.html": "/q-search/index.html",
-    "precache-manifest.ccee2a9602a07df73e51c9e878dab183.js": "/q-search/precache-manifest.ccee2a9602a07df73e51c9e878dab183.js",
+    "precache-manifest.b3e4f4191fc5853b411cc9298ba477a5.js": "/q-search/precache-manifest.b3e4f4191fc5853b411cc9298ba477a5.js",
     "service-worker.js": "/q-search/service-worker.js",
     "static/css/2.c5e60f7f.chunk.css.map": "/q-search/static/css/2.c5e60f7f.chunk.css.map",
-    "static/css/main.f773c3b1.chunk.css.map": "/q-search/static/css/main.f773c3b1.chunk.css.map",
+    "static/css/main.d3ced12c.chunk.css.map": "/q-search/static/css/main.d3ced12c.chunk.css.map",
     "static/media/index.css": "/q-search/static/media/roboto-latin-900italic.bc833e72.woff",
     "static/media/App.scss": "/q-search/static/media/surah-icon.5a697ce5.svg"
   }
