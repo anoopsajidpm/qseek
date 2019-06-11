@@ -7,8 +7,8 @@ import 'typeface-roboto';
 
 //import PropTypes from 'prop-types';
 //import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+//import AppBar from '@material-ui/core/AppBar';
+//import Toolbar from '@material-ui/core/Toolbar';
 //import Popover from '@material-ui/core/Popover';
 
 import Typography from '@material-ui/core/Typography';
@@ -27,7 +27,8 @@ import Typography from '@material-ui/core/Typography';
 
 import Listview from './components/Listview/Listview';
 import Loader from './components/Loader/Loader';
-import Langs from './langs.json';
+import Langs from './assets/json/langs.json';
+import Surahs from './assets/json/SurahList.json';
 import Popup from "reactjs-popup";
 //import Checkbox from './components/Checkbox/Checkbox';
 
@@ -43,6 +44,7 @@ class App extends React.Component {
         searchError: '',
         searchBlockClass: 'search-wrapper',
         selectedSurah: {},
+        selSurahNumber: 0,
         selectedTrans: '',
         preloader: true,
         chkTrans: {'english': false, 'malayalam' : false},
@@ -54,30 +56,27 @@ class App extends React.Component {
       this.handleLoad = this.handleLoad.bind(this);
       //this.chkSelectChange = this.chkSelectChange.bind(this);
       this.resetView = this.resetView.bind(this);
+      this.searchForAyah = this.searchForAyah.bind(this);
       
     }
     
     resetView() {
       //alert('asdf');
       this.setState({
+        inputVal: '',
         ayahDetails: null,
         mainResult: [],
         rawData: null,
         searchError: '',
         selectedSurah: {},
+        selSurahNumber: 0,
         selectedTrans: '',
         preloader: false,
-        chkTrans: {'english': false, 'malayalam' : false},
-        q_edition_ar: 'quran-simple-enhanced',
-        q_edition_trans: ['en.asad', 'en.pickthall', 'ml.abdulhameed'],
-        q_edition_audio: 'ar.alafasy'
-
+        chkTrans: {'english': false, 'malayalam' : false}
       })
     }
     componentDidMount() {
-      //console.log(this.langs);
       window.addEventListener('load', this.handleLoad);
-      //this.getLangs();
     }
     
     
@@ -87,8 +86,12 @@ class App extends React.Component {
          preloader: true
       });
       
-       
-      fetch('https://api.alquran.cloud/v1/surah')
+       this.setState({
+          surahList: Surahs.data,
+          preloader: false
+        });
+
+      /*fetch('https://api.alquran.cloud/v1/surah')
       .then(res => res.json())
       .then((data) => {
         let sList = [];
@@ -97,7 +100,7 @@ class App extends React.Component {
         });
         //this.surahList = sList;
         this.setState({
-          surahList: sList,
+          surahList: Surahs.data,
           preloader: false
         });
         //console.log(this.state.surahList);
@@ -107,15 +110,13 @@ class App extends React.Component {
           preloader: false,
           searchError: this.getErrMessage('list')
         })
-      ) 
+      ) */
      
     }
     
     searchForAyah_2() {
       let filter = this.state.inputVal;
-      /*if(this.state.selectedSurah && this.state.selectedSurah.number){
-        filter = this.state.selectedSurah.number + ":" + filter;
-      }*/
+      
       
 
       fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
@@ -138,27 +139,64 @@ class App extends React.Component {
         )
     }
 
-    searchForAyah = (event) => {
-      this.setState({
-         preloader: true
-      });
-      let filter = this.state.inputVal;
+    validateInput(value){
+      //console.log(value);
+      //let selSurah = this.state.selectedSurah;
+      let errMsg = '';
+      let isValid = true;
+      let totAyahs;
+      console.log(value);
+      if(this.state.selectedSurah.number){
+        totAyahs = Number(this.state.selectedSurah.numberOfAyahs);
+      }
+      else {
+        totAyahs = 6236;
+      }
+      
+      if(value > totAyahs){
+        isValid = false;
+      }
+      console.log(value);
+      return isValid;
+    }
+
+    searchForAyah(event) {
+     
+      console.log(this.state.preloader);
+      let filter = Number(this.state.inputVal);
       let q_editions = (this.state.q_edition_ar + ',' + this.state.q_edition_trans + ',' + this.state.q_edition_audio) ;
       
+
+      let isRefValid = this.validateInput(filter);
       //console.log(q_editions);
-      if(String(filter).split(':').length <= 1){
-        if(this.state.selectedSurah.number){
-          filter = this.state.selectedSurah.number + ":" + filter;
-        }
-      }
-      
-      if(!filter){
+      if(!filter || !isRefValid){
+        console.log(this.state.searchError);
         this.setState({
-          preloader: false,
-          searchError: 'no input'
-        })
+         preloader: false
+        });
         return false;
       }
+
+      if(String(filter).split(':').length <= 1){
+        if(this.state.selSurahNumber > 0){
+          filter = this.state.selSurahNumber + ":" + filter;
+        } 
+      } 
+
+      /*
+      if((String(filter).split('-').length > 1) || (String(filter).split('e').length > 1) || (String(filter).split('E').length > 1)) {
+           this.setState({
+             preloader: false,
+             searchError: 'Invalid Ayah Number'
+            })
+        }
+        return false;
+        */
+      // WRITE ELSE CASES
+      this.setState({
+         preloader: true
+      }, () => 
+
         fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/' + q_editions)
           .then(res => res.json())
           .then((data) => {
@@ -167,9 +205,6 @@ class App extends React.Component {
               rawData :data,
               searchBlockClass:'search-wrapper shrink'
             }, () => this.processData(data));
-            
-            
-            
           })
           .catch(
             this.setState({
@@ -177,7 +212,7 @@ class App extends React.Component {
              searchError: 'data error'
             })
           )
-      
+      );
     }
     
     getErrMessage(src) {
@@ -285,52 +320,52 @@ class App extends React.Component {
     }
     
     updateInputVal = (evt) => {
-      this.setState({
-        inputVal: evt.target.value
-      });
-    }
-    selectSurah = (evt) => {
-      let selSurah = [];
-      this.setState({
-        selectedSurah: null
-      });
-      if(evt.target.value > 0){
-        selSurah = this.state.surahList.filter(surah => Number(surah.number) === Number(evt.target.value));
-        
+      let value = evt.target.value;
+      let isValid = this.validateInput(value);
+      console.log(evt.target.value);
+      if(isValid){
         this.setState({
-          selectedSurah: selSurah[0]
+          inputVal: evt.target.value
         });
       }
-      console.log(selSurah);
+    }
+    verifyInputKey = (evt) => {
+      if(evt.keyCode === 186) { // || evt.keyCode === 189){
+        this.setState({
+          selSurahNumber: evt.target.value,
+          inputVal: '', 
+          preloader: true
+        },() => this.fetchSurahDetails(Number(this.state.selSurahNumber)));
+      }
+    }
+
+    selectSurah = (evt) => {
+      console.log(evt.target.value || evt.target.getAttribute('data-value'));
+      let dataVal = evt.target.value || evt.target.getAttribute('data-value');
+      this.setState({
+        preloader: true
+      }, () => this.fetchSurahDetails(Number(dataVal)));
+    }
+    fetchSurahDetails(dataVal){
+      let selSurah = [];
+      if(dataVal > 0){
+        selSurah = this.state.surahList.filter(surah => Number(surah.number) === Number(dataVal));
+        
+        this.setState({
+          selectedSurah: selSurah[0],
+          selSurahNumber: selSurah[0].number
+        }, () => {console.log(this.state.selectedSurah)});
+      }
+      
       
       this.setState({ 
         ayahDetails: {},
         mainResult: [], 
+        preloader: false
       }, () => {this.ayahInput.focus()});
       
     }
-    /*changeSurah = (evt) => {
-      console.log(evt.target.value);
-      let selSurah = [];
-      this.setState({
-        selectedSurah: null
-      });
-      if(evt.target.value > 0){
-        selSurah = this.state.surahList.filter(surah => Number(surah.number) === Number(evt.target.value));
-        
-        this.setState({
-          selectedSurah: selSurah[0]
-        });
-      }
-      console.log(selSurah);
-      
-      this.setState({ 
-        ayahDetails: {},
-        mainResult: [],
-        inputVal: 1
-      }, () => {this.ayahInput.focus()});
-      
-    }*/
+    
     selectLang = evt => {
       console.log(evt.target.getAttribute('data-value'));
       
@@ -361,59 +396,7 @@ class App extends React.Component {
       
     }
     
-    /*chkSelectChange = evt => {
-      let targ = evt.target;
-      //let status; //this.state.chkTrans.malayalam;
-      let eng = Boolean(this.state.chkTrans.english);
-      let mal = Boolean(this.state.chkTrans.malayalam);
-      console.log(evt.target.value);
-      //console.log(evt.target.checked);
-      
-      
-      
-      switch(targ.value){
-       case "english":
-        //status = this.state.chkTrans.english;
-        eng = !eng;
-        this.setState({
-          chkTrans: {english: eng, malayalam: mal}
-        },() => {
-          console.log(this.state.chkTrans.elglish);
-          if(eng){
-            targ.className = "toggle-btn selected";
-          } else {
-            targ.className = "toggle-btn";
-          }
-          
-          if(this.state.rawData.status && this.state.rawData.status === 'OK'){
-            this.processData(this.state.rawData);
-          }
-        });
-        break;
-       case "malayalam":
-        //status = this.state.chkTrans.malayalam;
-        mal = !mal;
-        this.setState({
-          chkTrans: {english: eng, malayalam: mal}
-        },() => {
-          console.log(this.state.chkTrans.malayalam);
-          if(mal){
-            targ.className = "toggle-btn selected";
-          } else {
-            targ.className = "toggle-btn";
-          }
-          if(this.state.rawData.status && this.state.rawData.status === 'OK'){
-            this.processData(this.state.rawData);
-          }
-        });
-        break;
-       default:
-      }
-      
-      
-      
-      
-    }*/
+    
 
 findLang(array, title) {
 //console.log('find');
@@ -426,6 +409,29 @@ findLang(array, title) {
       }
 }
 
+navigateAyah = (evt) => {
+  //console.log(evt.target.getAttribute('data-value'));
+  let data = evt.target.getAttribute('data-value');
+  let valNow = Number(this.state.inputVal);
+  let totAyahs = Number(this.state.selectedSurah.numberOfAyahs); 
+  switch (data){
+    case "back":  
+      if(valNow > 1) {
+        valNow--;
+      }    
+      break;
+    case "next":
+      if(valNow < totAyahs) {
+        valNow++;
+      }
+      break;
+    default:
+  }
+  this.setState({
+    inputVal: String(valNow)
+  }, () => this.searchForAyah(evt));
+  
+}
   render(){
     
     /* <select id="surah-list" onChange={evt => this.changeSurah(evt)} className="surah-select">
@@ -438,6 +444,7 @@ findLang(array, title) {
             <button className="toggle-btn" value="malayalam" onClick={this.chkSelectChange}>Mal</button>
             */
     let listview;
+
     //console.log(this.langs);
     if(this.state.mainResult.length){
       listview = <Listview key={this.state.ayahDetails && this.state.number} results={this.state.mainResult} details={this.state.ayahDetails}/>
@@ -446,6 +453,8 @@ findLang(array, title) {
     let surah = {};
     const surahs = this.state.surahList;
     const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
+    //const chapters = Surahs.data;
+    //console.log(chapters);
     //console.log(langs);
     let selectedTrans = '';
     if(this.state.chkTrans.english){
@@ -454,13 +463,13 @@ findLang(array, title) {
       if(this.state.chkTrans.malayalam){
         selectedTrans = 'Malayalam';
       } else {
-        selectedTrans = 'Select Language';
+        selectedTrans = 'None';
       }
     }
     
             const LangPopup =  () => (
         <Popup
-          trigger={<a href="javascript:;" className="toggle-btn align-self-center" value="Translation" >Translation: {selectedTrans} </a>}
+          trigger={<a href="javascript:;" className="toggle-btn align-self-center margin top" value="Translation" >Translation: {selectedTrans} </a>}
           on="click"
           position="center center"
           modal
@@ -479,15 +488,7 @@ findLang(array, title) {
         </Popup>
       )
 
-        /*const TipsSurah = () => (<Popup
-              trigger=""
-              position="right top"
-              open="1"
-              closeOnDocumentClick
-              id="tip-surah"
-            ><span>Tap to select Surah</span>
-            </Popup>
-        )*/
+        
       const SurahPopup =  () => (
             <Popup
               trigger={<a href="javascript:;" value="Surahs" className="surah-button">Surah</a>}
@@ -499,9 +500,20 @@ findLang(array, title) {
             >
             <div className="surah-wrapper">
               <h3>Select Surah:</h3>
-              <ul>
+              <ul className="surah-list-ul">
+                <li className="row-flex list-heads">
+                  <p className="sno" >No.</p>
+                  <p className="sname">Surah Name</p>
+                  <p className="sayah">Ayahs</p>
+                </li>
               {
-                surahs.map(surah => <li value={surah.number} key={surah.number} onClick={this.selectSurah}>{surah.number} - {surah.englishName} </li>)
+                surahs.map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
+                
+                  <span data-value={surah.number} className="sno">{surah.number}</span>
+                  <span data-value={surah.number} className="sname">{surah.englishName}</span>
+                  <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
+                
+                </li>)
               }
               </ul>
             </div>
@@ -533,10 +545,13 @@ findLang(array, title) {
       <section className="titles-wrapper">
         
           <h2 className="surah-title">{selectedSurah.englishName} | {selectedSurah.name}</h2>
-          <p>{selectedSurah.englishNameTranslation}</p>
-           <p>Surah: <span className="clearer">{selectedSurah.number}</span> | Ayah: <span className="clearer">{this.state.inputVal ? this.state.inputVal : 'Not Selected'}</span></p>
-            <LangPopup />        
-          
+          <p>Surah: <span className="clearer">{selectedSurah.number}</span> | {selectedSurah.englishNameTranslation}</p>
+          <LangPopup />
+          <div className="row-flex ayah-nav-wrapper margin top">
+            <a href="javascript:;" className="nav-btn back" data-value="back" onClick={this.navigateAyah}>Back</a>
+              <p>Ayah: <span className="clearer">{this.state.inputVal ? this.state.inputVal : 'Not Selected'}</span></p>
+            <a href="javascript:;" className="nav-btn next" data-value="next" onClick={evt => this.navigateAyah(evt)}>Next</a>
+           </div>
       </section>
   }
       
@@ -547,8 +562,8 @@ findLang(array, title) {
             
             <SurahPopup />
             <div className="triangle-right"><div className="inner"></div></div>
-            {this.state.selectedSurah.englishName && 
-              <p ref={(sur) => { this.surahLabel = sur; }} className="surah-name">{this.state.selectedSurah.number}:</p>
+            {this.state.selSurahNumber > 0 && 
+              <p ref={(sur) => { this.surahLabel = sur; }} className="surah-name">{this.state.selSurahNumber}:</p>
             }
           </div>
           <div className="ayah-input">
@@ -556,6 +571,7 @@ findLang(array, title) {
             <input type="number"
               value={this.state.inputVal}
               onChange={evt =>this.updateInputVal(evt)}
+              onKeyDown={evt => this.verifyInputKey(evt)}
               placeholder="Enter Ayah No"
               ref={(input) => { this.ayahInput = input; }} 
               className="input-ayah"

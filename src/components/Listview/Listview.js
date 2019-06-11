@@ -21,11 +21,13 @@ import './Listview.scss';
   class Listview extends React.Component {
     constructor(props) {
       super(props);
+      console.log(this.props);
       this.state = {
       }
     }
     componentWillUnmount = () => {
         console.log('asdf');
+        
     }
     onClickNavigate = (evt) => {
       let curAyah = this.props.details.numberInSurah;

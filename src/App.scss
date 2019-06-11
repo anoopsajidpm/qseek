@@ -32,7 +32,34 @@ h1{
 .App-link {
   color: #61dafb;
 }
-
+.ayah-nav-wrapper{
+  width: 100%;
+  align-items: stretch;
+  justify-content: space-between;
+}
+.nav-btn{
+  text-decoration: none;
+  display: block;
+  flex: 0 0 40px;
+  height:30px;
+  line-height: 30px;
+  text-decoration: none;
+  color: #aaa;
+  background-color: #fff;
+  &.back{
+    background: url(./assets/images/back-arrow.svg) no-repeat left center;
+    background-size:auto 80%;
+    padding-left: 22px;
+    
+  }
+  &.next{
+    background: url(./assets/images/next-arrow.svg) no-repeat right center;
+    background-size:auto 80%;
+    padding-right: 22px;
+    
+  }
+  
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -208,6 +235,20 @@ h1{
 .align-self-center {
   align-self: center;
 }
+.margin {
+  &.top{
+    margin-top:10px;
+  }
+  &.btm{
+    margin-bottom:10px;
+  }
+  &.lft{
+    margin-left:10px;
+  }
+  &.rte{
+    margin-right:10px;
+  }
+}
 .toggle-btn{
   background-color: #fff;
   //border: solid 1px #ccc;
@@ -304,9 +345,9 @@ h1{
   padding: 5px 10px 10px;
   border-bottom: solid 1px #e7e7e7;
   p{
-    padding:5px 0; 
+    padding:0; //5px 0; 
     margin:0;
-    margin-right: 10px;
+    //margin-right: 10px;
     .clearer{
       font-weight: bold;
       font-size: 1.2em;
@@ -315,4 +356,42 @@ h1{
 }
 .surah-title{
   margin:0; padding:0;
+}
+.surah-list-ul{
+  li{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    &.list-heads{
+      font-weight: bold;
+      color: #666;
+      font-size:0.9em;
+      cursor: default;
+      border-bottom: solid 1px #ccc;
+      &:hover{
+        background-color: transparent;
+      
+      }
+    }
+    >*{
+      &.sno {
+        text-align:left;
+        flex: 0 0 40px;
+      }
+      &.sname{
+        text-align:left;
+        flex: 1 1 100%;
+      }
+      &.sayah{
+        text-align:center;
+        flex: 0 0 50px;
+      }
+    }
+    >p {
+      padding:0; 
+      margin:0;
+       
+    }
+  }
 }
