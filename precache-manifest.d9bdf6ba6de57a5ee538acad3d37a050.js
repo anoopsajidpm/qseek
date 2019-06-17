@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a4ca4322f5ba7bc824ba5255e9434a96",
+    "revision": "e12e669fb87bc7645f5f48aca797b7ca",
     "url": "/q-search/index.html"
   },
   {
-    "revision": "76558f54f8d50ec67a7f",
+    "revision": "91bbcf8810e9ab6b942f",
     "url": "/q-search/static/css/2.c5e60f7f.chunk.css"
   },
   {
-    "revision": "618a88781d374dca685c",
-    "url": "/q-search/static/css/main.b58e3c1b.chunk.css"
+    "revision": "faf80a64e9bc644943d1",
+    "url": "/q-search/static/css/main.813f6e45.chunk.css"
   },
   {
-    "revision": "76558f54f8d50ec67a7f",
-    "url": "/q-search/static/js/2.ce3e71b2.chunk.js"
+    "revision": "91bbcf8810e9ab6b942f",
+    "url": "/q-search/static/js/2.72437ac2.chunk.js"
   },
   {
-    "revision": "618a88781d374dca685c",
-    "url": "/q-search/static/js/main.369b6e42.chunk.js"
+    "revision": "faf80a64e9bc644943d1",
+    "url": "/q-search/static/js/main.333c550c.chunk.js"
   },
   {
     "revision": "75f87980e3d8ead247a8",
@@ -36,12 +36,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/q-search/static/media/dowpdown.25c20e41.svg"
   },
   {
+    "revision": "41945b4b8488f43647434a4d3ee1e486",
+    "url": "/q-search/static/media/indicator-right.41945b4b.svg"
+  },
+  {
     "revision": "47ae0a039f44bc80bf0345fa47a123a0",
     "url": "/q-search/static/media/next-arrow-dis.47ae0a03.svg"
   },
   {
     "revision": "1d5d5222865f137d9d2e4ef99582b22f",
     "url": "/q-search/static/media/next-arrow.1d5d5222.svg"
+  },
+  {
+    "revision": "0e31ec0934bd32de4668824d0ffbf93a",
+    "url": "/q-search/static/media/preloader.0e31ec09.png"
   },
   {
     "revision": "987b84570ea69ee660455b8d5e91f5f1",
@@ -140,8 +148,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/q-search/static/media/roboto-latin-900italic.bc833e72.woff"
   },
   {
-    "revision": "ef7797cfa6506a122b47973b862e841c",
-    "url": "/q-search/static/media/search-icon.ef7797cf.svg"
+    "revision": "af64719686574b4104aaeef41c18d7d4",
+    "url": "/q-search/static/media/search-icon.af647196.svg"
   },
   {
     "revision": "5a697ce586fcff273d58a54b95f8e521",
