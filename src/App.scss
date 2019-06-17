@@ -151,9 +151,7 @@ h1{
     padding-right: 10px;
     background: url(./assets/images/surah-icon.svg) no-repeat left center ;
     background-size: 80% auto;
-    //border: solid 1px #e7e7e7;
-    //border-radius: 5px;
-    //border-right: solid 1px #595858;
+
     text-indent: -99999px;
     
    border-right: solid 1px rgba(255,255,255, 0.3);
@@ -246,6 +244,10 @@ h1{
     background-size: auto 12px, auto 70%;
   text-indent: -99999px;
   border-left: solid 1px rgba(255,255,255, 0.3);
+
+  &.inactive{
+    background-image: url(./assets/images/indicator-right.svg), url(./assets/images/search-icon-dis.svg);
+  }
 
 }
 
@@ -440,9 +442,8 @@ h1{
       }
     }
     .select-value-wrapper{
-      background: url('./assets/images/dowpdown.svg') no-repeat right top 10px;
-      background-size: 15px auto;
-      padding: 0 20px;
+      
+      //padding: 0 20px;
       label{
         display: block;
         height: 30px;
@@ -452,7 +453,32 @@ h1{
           color: #1d1d1d;
           font-size: 0.9em;
           font-weight: bold;
+          background: url('./assets/images/dowpdown.svg') no-repeat right top 7px;
+	        background-size: 15px auto;
+          padding-right: 22px;
         }
       }
     }
+}
+.surah-select-wrapper{
+  position: relative;
+}
+.help-bubble{
+  position: absolute;
+  bottom: calc(100% + 10px);
+  width: 100px;
+  border: solid 1px #ccc;
+  border-radius: 10px;
+  padding: 5px;
+  p{
+    padding:0; margin:0;
+  }
+  &.left{
+    &.bottom{
+
+    }
+    &.top{
+
+    }
+  }
 }

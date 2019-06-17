@@ -8,7 +8,7 @@ import Langs from './assets/json/langs.json';
 import Surahs from './assets/json/SurahList.json';
 import Popup from "reactjs-popup";
 import SurahInfo from './modules/SurahInfo/SurahInfo';
-
+ 
 //import TextField from '@material-ui/core/TextField';
 
 //import PropTypes from 'prop-types';
@@ -51,9 +51,10 @@ class App extends React.Component {
         langIsOpen: false,
         chkTrans: {'english': false, 'malayalam' : false},
         q_edition_ar: 'quran-simple-enhanced',
-        q_edition_trans: ['en.asad', 'en.pickthall', 'ml.abdulhameed'],
+        q_edition_trans: ['en.asad', 'ml.abdulhameed'], //'en.pickthall', 
         q_edition_audio: 'ar.alafasy',
-        navBtnClass: {'back':'nav-btn back', 'next':'nav-btn next'}
+        navBtnClass: {'back':'nav-btn back', 'next':'nav-btn next'},
+        searchBtnClass: 'search-btn inactive'
       }
       //const langs = JSON.parse('./langs.json');
       this.handleLoad = this.handleLoad.bind(this);
@@ -80,14 +81,16 @@ class App extends React.Component {
       })
     }
     componentDidMount() {
-      window.addEventListener('load', this.handleLoad);
+      this.setState({
+         preloader: true
+      }, () => window.addEventListener('load', this.handleLoad));
     }
     
     handleLoad(){
       //console.log(Langs);
-      this.setState({
+      /*this.setState({
          preloader: true
-      });
+      });*/
       
        this.setState({
           surahList: Surahs.data,
@@ -103,7 +106,7 @@ class App extends React.Component {
     validateInput(value){
       let isValid = true;
       let totAyahs;
-      console.log(value);
+      //console.log(value);
       if(this.state.selectedSurah.number){
         totAyahs = Number(this.state.selectedSurah.numberOfAyahs);
       }
@@ -111,10 +114,10 @@ class App extends React.Component {
         totAyahs = 6236;
       }
       
-      if(value > totAyahs){
+      if(Number(value) > totAyahs){
         isValid = false;
       }
-      console.log(value);
+      //console.log(value);
       return isValid;
     }
     searchForAyah(event) {
@@ -267,10 +270,17 @@ class App extends React.Component {
       let isValid = this.validateInput(value);
       let navBackClass = this.state.navBtnClass.back;
       let navNextClass = this.state.navBtnClass.next; 
+      let searchBtn;
       if(isValid){
         this.setState({
           inputVal: evt.target.value
         });
+      } 
+
+      if(!Number(value)){
+        searchBtn = 'search-btn inactive';
+      } else {
+        searchBtn = 'search-btn';
       }
       if(value <= 1){
         navNextClass = 'nav-btn next';
@@ -284,6 +294,7 @@ class App extends React.Component {
         }
       }
       this.setState({
+        searchBtnClass: searchBtn,
         navBtnClass: {
           back: navBackClass,
           next: navNextClass
@@ -292,6 +303,7 @@ class App extends React.Component {
 
     }
     verifyInputKey(evt) {
+      console.log('asdf');
       if(evt.keyCode === 186) { 
         this.setState({
           selSurahNumber: evt.target.value,
@@ -374,6 +386,8 @@ navigateAyah = (evt) => {
 }
   render(){
     let listview;
+// url is 'https://www.example.com/user?id=123&type=4';
+  
 
     if(this.state.mainResult.length){
       listview = <Listview 
@@ -384,6 +398,9 @@ navigateAyah = (evt) => {
     }
     const surahs = this.state.surahList;
     
+    const closeBubble = (evt) => {
+      console.log(evt.target);
+    }
     const SurahPopup =  () => (
       <Popup
         trigger={<a href="javascript:;" value="Surahs" className="surah-button">Surah</a>}
@@ -450,7 +467,10 @@ console.log(queryString);
       }
         <section className={this.state.searchBlockClass} id="search-block">
         <div className="row-flex ayah-input-wrapper" >
-          <div className="row-flex">
+          <div className="row-flex surah-select-wrapper" >
+            <div className="help-bubble left bottom" onClick={(evt) => this.closeBubble} hidden >
+              <p>Tap to select Surah here.</p>
+            </div>
             <SurahPopup />
             
             {this.state.selSurahNumber > 0 && 
@@ -470,11 +490,11 @@ console.log(queryString);
               min="1"
               max={this.state.selectedSurah.numberOfAyahs}
             />
-            {this.state.selectedSurah.englishName && 
-              <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs}</label>
-            }
+            
+              <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs ? this.state.selectedSurah.numberOfAyahs : 6236 }</label>
+            
           </div>
-          <a href="javascript:;" onClick={this.searchForAyah} role="button" className="search-btn">Search</a>
+          <a href="javascript:;" onClick={this.searchForAyah} role="button" className={this.state.searchBtnClass}>Search</a>
           
          </div> 
         </section>
