@@ -40,7 +40,7 @@ h1{
 .nav-btn{
   text-decoration: none;
   display: block;
-  flex: 0 0 40px;
+  flex: 0 0 auto; //40px;
   height:30px;
   line-height: 30px;
   text-decoration: none;
@@ -50,13 +50,23 @@ h1{
     background: url(./assets/images/back-arrow.svg) no-repeat left center;
     background-size:auto 80%;
     padding-left: 22px;
+    &.disabled{
+      background-image: url(./assets/images/back-arrow-dis.svg) no-repeat left center;
+    }
     
   }
   &.next{
     background: url(./assets/images/next-arrow.svg) no-repeat right center;
     background-size:auto 80%;
     padding-right: 22px;
-    
+    &.disabled{
+      background-image: url(./assets/images/next-arrow-dis.svg);
+    }
+  }
+  &.off{
+//    display: none;
+    background: none;
+    cursor: default;
   }
   
 }
@@ -213,7 +223,7 @@ h1{
 
   &::placeholder{
     color:#666;
-    font-size: 0.7em;
+    font-size: 0.6em;
     font-weight: normal;
   }
   
@@ -394,4 +404,48 @@ h1{
        
     }
   }
+}
+
+.lang-select{
+    flex: 0 0 30px;
+    height: 30px;
+    width: 230px; //270px;
+    align-self: center;
+    margin-top: 10px;
+    position: relative;
+    text-align: center;
+    //visibility: hidden;
+    select{
+      position: absolute;
+      top:0;
+      left:0;
+      bottom:0;
+      width:100%;
+      option{
+        
+        height:30px; 
+      }
+      &.hide{
+        opacity: 0; //visibility: hidden;
+      }
+      &.show{
+        opacity: 1; //visibility: show;
+      }
+    }
+    .select-value-wrapper{
+      background: url('./assets/images/dowpdown.svg') no-repeat right top 10px;
+      background-size: 15px auto;
+      padding: 0 20px;
+      label{
+        display: block;
+        height: 30px;
+       // background-color: white;
+        color: #999;
+        span{
+          color: #1d1d1d;
+          font-size: 0.9em;
+          font-weight: bold;
+        }
+      }
+    }
 }

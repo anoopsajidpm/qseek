@@ -11,7 +11,7 @@ import 'typeface-roboto';
 //import Toolbar from '@material-ui/core/Toolbar';
 //import Popover from '@material-ui/core/Popover';
 
-import Typography from '@material-ui/core/Typography';
+//import Typography from '@material-ui/core/Typography';
 
 //import Button from '@material-ui/core/Button';
 //import Tabs from '@material-ui/core/Tabs';
@@ -30,6 +30,8 @@ import Loader from './components/Loader/Loader';
 import Langs from './assets/json/langs.json';
 import Surahs from './assets/json/SurahList.json';
 import Popup from "reactjs-popup";
+import SurahInfo from './modules/SurahInfo/SurahInfo';
+
 //import Checkbox from './components/Checkbox/Checkbox';
 
 class App extends React.Component {
@@ -47,18 +49,21 @@ class App extends React.Component {
         selSurahNumber: 0,
         selectedTrans: '',
         preloader: true,
+        langIsOpen: false,
         chkTrans: {'english': false, 'malayalam' : false},
         q_edition_ar: 'quran-simple-enhanced',
         q_edition_trans: ['en.asad', 'en.pickthall', 'ml.abdulhameed'],
-        q_edition_audio: 'ar.alafasy'
+        q_edition_audio: 'ar.alafasy',
+        navBtnClass: {'back':'nav-btn back', 'next':'nav-btn next'}
       }
       //const langs = JSON.parse('./langs.json');
       this.handleLoad = this.handleLoad.bind(this);
-      //this.chkSelectChange = this.chkSelectChange.bind(this);
+      this.processData = this.processData.bind(this);
       this.resetView = this.resetView.bind(this);
       this.searchForAyah = this.searchForAyah.bind(this);
-      
+      this.langPopupOnOpen = this.langPopupOnOpen.bind(this);
     }
+    
     
     resetView() {
       //alert('asdf');
@@ -70,8 +75,8 @@ class App extends React.Component {
         searchError: '',
         selectedSurah: {},
         selSurahNumber: 0,
+        langIsOpen: false,
         selectedTrans: '',
-        preloader: false,
         chkTrans: {'english': false, 'malayalam' : false}
       })
     }
@@ -91,58 +96,19 @@ class App extends React.Component {
           preloader: false
         });
 
-      /*fetch('https://api.alquran.cloud/v1/surah')
-      .then(res => res.json())
-      .then((data) => {
-        let sList = [];
-        sList = data.data.map(chapter => {
-          return chapter;
-        });
-        //this.surahList = sList;
-        this.setState({
-          surahList: Surahs.data,
-          preloader: false
-        });
-        //console.log(this.state.surahList);
-      })
-      .catch(
-        this.setState({
-          preloader: false,
-          searchError: this.getErrMessage('list')
-        })
-      ) */
      
     }
-    
-    searchForAyah_2() {
-      let filter = this.state.inputVal;
-      
-      
 
-      fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/quran-simple-enhanced,en.asad,en.pickthall,ml.abdulhameed,ar.alafasy')
-        .then(res => res.json())
-        .then((data) => {
-          this.setState({
-            searchError:'',
-            rawData :data,
-            searchBlockClass:'search-wrapper shrink'
-          });
-          console.log(data);
-          this.processData(data);
-          
-        })
-        .catch(
-          this.setState({
-           preloader: false,
-           searchError: 'err'
-          })
-        )
+    langPopupOnOpen(){
+      this.setState({
+        langIsOpen: true
+      })
     }
 
     validateInput(value){
       //console.log(value);
       //let selSurah = this.state.selectedSurah;
-      let errMsg = '';
+      //let errMsg = '';
       let isValid = true;
       let totAyahs;
       console.log(value);
@@ -162,13 +128,15 @@ class App extends React.Component {
 
     searchForAyah(event) {
      
-      console.log(this.state.preloader);
+      //console.log(this.state.preloader);
       let filter = Number(this.state.inputVal);
       let q_editions = (this.state.q_edition_ar + ',' + this.state.q_edition_trans + ',' + this.state.q_edition_audio) ;
-      
+      this.setState({
+         preloader: true
+        });
 
       let isRefValid = this.validateInput(filter);
-      //console.log(q_editions);
+    
       if(!filter || !isRefValid){
         console.log(this.state.searchError);
         this.setState({
@@ -183,27 +151,50 @@ class App extends React.Component {
         } 
       } 
 
-      /*
-      if((String(filter).split('-').length > 1) || (String(filter).split('e').length > 1) || (String(filter).split('E').length > 1)) {
-           this.setState({
-             preloader: false,
-             searchError: 'Invalid Ayah Number'
-            })
+      
+     
+      const cachedFetch = (url, options) => {
+        // Use the URL as the cache key to sessionStorage
+      let cacheKey = url
+      // START new cache HIT code
+      let cached = sessionStorage.getItem(cacheKey)
+      if (cached !== null) {
+        // it was in sessionStorage! Yay!
+        console.log('already cached')
+        let response = new Response(new Blob([cached]));
+        return Promise.resolve(response);
+      }
+      // END new cache HIT code
+      return fetch(url, options).then(response => {
+        // let's only store in cache if the content-type is
+        // JSON or something non-binary
+        let ct = response.headers.get('Content-Type')
+        if (ct && (ct.match(/application\/json/i) || ct.match(/text\//i))) {
+          // There is a .json() instead of .text() but
+          // we're going to store it in sessionStorage as
+          // string anyway.
+          // If we don't clone the response, it will be
+          // consumed by the time it's returned. This
+          // way we're being un-intrusive.
+          response.clone().text().then(content => {
+            sessionStorage.setItem(cacheKey, content)
+          })
         }
-        return false;
-        */
-      // WRITE ELSE CASES
+        return response
+        })
+      }
+
       this.setState({
          preloader: true
-      }, () => 
-
-        fetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/' + q_editions)
+      }, () => {
+        cachedFetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/' + q_editions)
           .then(res => res.json())
           .then((data) => {
+            console.log(this.state.preloader);
+            console.log('done...');
             this.setState({
               searchError:'',
-              rawData :data,
-              searchBlockClass:'search-wrapper shrink'
+              rawData :data
             }, () => this.processData(data));
           })
           .catch(
@@ -212,10 +203,11 @@ class App extends React.Component {
              searchError: 'data error'
             })
           )
+        }
       );
     }
     
-    getErrMessage(src) {
+    /*getErrMessage(src) {
       let message = '';
       //let inp = this.state.inputVal;
       let splitV = this.state.inputVal.split(':');
@@ -243,20 +235,25 @@ class App extends React.Component {
       }
       return message;
       
-    }
+    }*/
     
-     processData(result) {
+     processData(results) {
       let res = [];
       let audio = '';
       let details = null;
-      
-      this.setState({ 
+      let result = this.state.rawData;
+
+      /*this.setState({ 
         ayahDetails: {},
-        mainResult: []
-      });
+        mainResult: [],
+        preloader: true
+      });*/
       
-      //console.log(this.state.chkTrans.english);
-      //console.log(this.state.chkTrans.malayalam);
+      if(!result || !result.data){
+        console.log('no data');
+        return false;
+      }
+      
         result.data.map(item => {
             let filteredItem = null;
             var flag = true;
@@ -319,17 +316,37 @@ class App extends React.Component {
       
     }
     
-    updateInputVal = (evt) => {
+    updateInputVal(evt) {
       let value = evt.target.value;
       let isValid = this.validateInput(value);
-      console.log(evt.target.value);
+      let navBackClass = this.state.navBtnClass.back;
+      let navNextClass = this.state.navBtnClass.next; 
+      //console.log(evt.target.value);
       if(isValid){
         this.setState({
           inputVal: evt.target.value
         });
       }
+      if(value <= 1){
+        navNextClass = 'nav-btn next';
+        navBackClass = 'nav-btn back disabled';
+      } else {
+        navBackClass = 'nav-btn back';
+        if(this.state.selSurahNumber > 0 && value === this.state.selectedSurah.numberOfAyahs){
+          navNextClass = 'nav-btn next disabled';
+        } else {
+          navNextClass = 'nav-btn next';
+        }
+      }
+      this.setState({
+        navBtnClass: {
+          back: navBackClass,
+          next: navNextClass
+        }
+      })
+
     }
-    verifyInputKey = (evt) => {
+    verifyInputKey(evt) {
       if(evt.keyCode === 186) { // || evt.keyCode === 189){
         this.setState({
           selSurahNumber: evt.target.value,
@@ -387,14 +404,14 @@ class App extends React.Component {
         chkTrans:{
           english: eng,
           malayalam: mal
-        }
+        },
+        selectedTrans: this.findLang(Langs, lng),
+        langIsOpen: false
       }, () => {
-        if(this.state.rawData && this.state.rawData.data){
           this.processData(this.state.rawData);
-        }
       });
       
-    }
+    } 
     
     
 
@@ -414,146 +431,199 @@ navigateAyah = (evt) => {
   let data = evt.target.getAttribute('data-value');
   let valNow = Number(this.state.inputVal);
   let totAyahs = Number(this.state.selectedSurah.numberOfAyahs); 
+  let navBackClass = this.state.navBtnClass.back;
+  let navNextClass = this.state.navBtnClass.next; 
   switch (data){
     case "back":  
       if(valNow > 1) {
+       // navBackClass = 'nav-btn back'; 
         valNow--;
-      }    
+      }
       break;
     case "next":
       if(valNow < totAyahs) {
+        //navNextClass = 'nav-btn next';
         valNow++;
       }
       break;
+      
     default:
   }
+   if(valNow === 1){
+      navNextClass = 'nav-btn next';
+      navBackClass = 'nav-btn back disabled';
+    } else {
+      navBackClass = 'nav-btn back';
+      if(this.state.selSurahNumber > 0 && valNow === this.state.selectedSurah.numberOfAyahs){
+        navNextClass = 'nav-btn next disabled';
+      } else {
+        navNextClass = 'nav-btn next';
+      }
+    }
   this.setState({
-    inputVal: String(valNow)
+    inputVal: String(valNow),
+    navBtnClass: {back: navBackClass, next: navNextClass},
   }, () => this.searchForAyah(evt));
   
 }
   render(){
     
     /* <select id="surah-list" onChange={evt => this.changeSurah(evt)} className="surah-select">
-              <option value="0" >--Select--</option>
-              { 
-                surahs.map(el => <option value={el.number} key={el.number} > {el.number} - {el.englishName} </option>)
-              }
-            </select>
-            
-            <button className="toggle-btn" value="malayalam" onClick={this.chkSelectChange}>Mal</button>
-            */
+      <option value="0" >--Select--</option>
+      { 
+        surahs.map(el => <option value={el.number} key={el.number} > {el.number} - {el.englishName} </option>)
+      }
+    </select>
+    
+    <button className="toggle-btn" value="malayalam" onClick={this.chkSelectChange}>Mal</button>
+    */
     let listview;
 
     //console.log(this.langs);
     if(this.state.mainResult.length){
-      listview = <Listview key={this.state.ayahDetails && this.state.number} results={this.state.mainResult} details={this.state.ayahDetails}/>
+      listview = <Listview 
+        key={this.state.ayahDetails && this.state.number} 
+        results={this.state.mainResult} 
+        details={this.state.ayahDetails}
+        />
     }
     //console.log(this.findLang(Langs, 'ml'));
-    let surah = {};
+    //let surah = {};
     const surahs = this.state.surahList;
-    const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
+    //const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
     //const chapters = Surahs.data;
     //console.log(chapters);
     //console.log(langs);
-    let selectedTrans = '';
+   /*let selectedTrans = () => {
+    let selection = ''
     if(this.state.chkTrans.english){
-      selectedTrans = 'English';
+      selection = 'English';
     } else {
       if(this.state.chkTrans.malayalam){
-        selectedTrans = 'Malayalam';
+        selection = 'Malayalam';
       } else {
-        selectedTrans = 'None';
+        selection = 'None';
       }
     }
+    this.setState({
+      selectedTrans: selection
+    })
+    return selection;
+   }*/
     
-            const LangPopup =  () => (
-        <Popup
-          trigger={<a href="javascript:;" className="toggle-btn align-self-center margin top" value="Translation" >Translation: {selectedTrans} </a>}
-          on="click"
-          position="center center"
-          modal
-          closeOnDocumentClick
-        >
-        <div className="surah-wrapper">
-          <h3>Select Language:</h3>
-          <ul>
-          {
-            filteredLangs.map(lng=> 
-              <li data-value={lng.code} key={lng.code} onClick={this.selectLang} >{lng.code} - {lng.name} </li>
-            )
-          }
-          </ul>
-        </div>
-        </Popup>
-      )
+    /*const LangPopup =  () => (
+      <Popup
+        trigger={<a href="javascript:;" className="toggle-btn align-self-center margin top" value="Translation" >Translation: {selectedTrans} </a>}
+        on="click"
+        position="center center"
+        modal
+        closeOnDocumentClick
+      >
+      <div className="surah-wrapper">
+        <h3>Select Language:</h3>
+        <ul>
+        {
+          filteredLangs.map(lng=> 
+            <li 
+            data-value={lng.code} 
+            key={lng.code} 
+            onClick={this.selectLang} >{lng.code} - {lng.name} </li>
+          )
+        }
+        </ul>
+      </div>
+      </Popup>
+    )*/
 
         
-      const SurahPopup =  () => (
-            <Popup
-              trigger={<a href="javascript:;" value="Surahs" className="surah-button">Surah</a>}
-              on="click"
-              position="center center"
-              modal
-              closeOnDocumentClick
-              className="surah-popup"
-            >
-            <div className="surah-wrapper">
-              <h3>Select Surah:</h3>
-              <ul className="surah-list-ul">
-                <li className="row-flex list-heads">
-                  <p className="sno" >No.</p>
-                  <p className="sname">Surah Name</p>
-                  <p className="sayah">Ayahs</p>
-                </li>
-              {
-                surahs.map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
-                
-                  <span data-value={surah.number} className="sno">{surah.number}</span>
-                  <span data-value={surah.number} className="sname">{surah.englishName}</span>
-                  <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
-                
-                </li>)
-              }
-              </ul>
-            </div>
-            </Popup>
-         
-          )
+    const SurahPopup =  () => (
+      <Popup
+        trigger={<a href="javascript:;" value="Surahs" className="surah-button">Surah</a>}
+        on="click"
+        position="center center"
+        modal
+        closeOnDocumentClick
+        className="surah-popup"
+        onRequestClose={() => {
+          this.setState({ modalIsOpen: false });
+        }}
+      >
+      <div className="surah-wrapper">
+        <h3>Select Surah:</h3>
+        <ul className="surah-list-ul">
+          <li className="row-flex list-heads">
+            <p className="sno" >No.</p>
+            <p className="sname">Surah Name</p>
+            <p className="sayah">Ayahs</p>
+          </li>
+        {
+          surahs.map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
           
-          /*<label htmlFor="surah-list">Surah:</label>
-          <AppBar position="static" color="default">
-          <Toolbar>
-            <Typography variant="h1" size="small" color="inherit">
-              Q-Search
-            </Typography>
-          </Toolbar>
-        </AppBar>
-          */
-          const selectedSurah = this.state.selectedSurah
-  return (
-    <div className="page-wrapper">
-      <header className="App-header">
-       
-       <h1 onClick={this.resetView}>
-              Q-Search
-            </h1>
-            
-      </header>
-      {
-        selectedSurah.number && 
-      <section className="titles-wrapper">
+            <span data-value={surah.number} className="sno">{surah.number}</span>
+            <span data-value={surah.number} className="sname">{surah.englishName}</span>
+            <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
+          
+          </li>)
+        }
+        </ul>
+      </div>
+      </Popup>
+    
+    )
+          
+    /*<label htmlFor="surah-list">Surah:</label>
+      <AppBar position="static" color="default">
+      <Toolbar>
+        <Typography variant="h1" size="small" color="inherit">
+          Q-Search
+        </Typography>
+      </Toolbar>
+    </AppBar>
+
+    <section className="titles-wrapper">
         
           <h2 className="surah-title">{selectedSurah.englishName} | {selectedSurah.name}</h2>
           <p>Surah: <span className="clearer">{selectedSurah.number}</span> | {selectedSurah.englishNameTranslation}</p>
           <LangPopup />
           <div className="row-flex ayah-nav-wrapper margin top">
-            <a href="javascript:;" className="nav-btn back" data-value="back" onClick={this.navigateAyah}>Back</a>
+            <a href="javascript:;" className={this.state.navBtnClass.back} data-value="back" onClick={this.navigateAyah}>Back</a>
               <p>Ayah: <span className="clearer">{this.state.inputVal ? this.state.inputVal : 'Not Selected'}</span></p>
-            <a href="javascript:;" className="nav-btn next" data-value="next" onClick={evt => this.navigateAyah(evt)}>Next</a>
+            <a href="javascript:;" className={this.state.navBtnClass.next} data-value="next" onClick={evt => this.navigateAyah(evt)}>Next</a>
            </div>
       </section>
-  }
+    */
+    const selectedSurah = this.state.selectedSurah;
+   //alert(this.state.selectedTrans);
+   const queryString = require('query-string');
+//var location = this.location;
+console.log(queryString);
+//console.log(queryString.parse(location.search));
+  return (
+    <div className="page-wrapper">
+      <header className="App-header">
+       <h1 onClick={this.resetView}>
+          Q-Search
+       </h1>
+      </header>
+      {
+        selectedSurah.number && 
+
+        <SurahInfo 
+          details={this.state.ayahDetails} 
+          onNavNext={this.navigateAyah} 
+          onNavBack ={this.navigateAyah} 
+          selectedSurah ={selectedSurah}
+          navBackClass = {this.state.navBtnClass.back}
+          navNextClass = {this.state.navBtnClass.next}
+          langPopupOpen = {this.state.langIsOpen}
+          onSelectLang = {this.selectLang}
+          selectedLang = {this.state.selectedTrans}
+          translations = {this.state.chkTrans}
+          inputVal = {this.state.inputVal}
+          langPopupOnOpen = {this.langPopupOnOpen}
+          refreshData = {this.processData}
+          />
+      }
       
       
         <section className={this.state.searchBlockClass} id="search-block">
@@ -572,7 +642,7 @@ navigateAyah = (evt) => {
               value={this.state.inputVal}
               onChange={evt =>this.updateInputVal(evt)}
               onKeyDown={evt => this.verifyInputKey(evt)}
-              placeholder="Enter Ayah No"
+              placeholder="Ayah No."
               ref={(input) => { this.ayahInput = input; }} 
               className="input-ayah"
               pattern="^[0-9]*$"
@@ -591,12 +661,14 @@ navigateAyah = (evt) => {
         </section>
       <div className='content-wrapper'>
         {listview}
+         
       </div>
       
       { this.state.preloader && 
         <Loader />
+        
       }
-      
+     
            
     </div>
     
