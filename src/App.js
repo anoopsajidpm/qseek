@@ -8,7 +8,7 @@ import Langs from './assets/json/langs.json';
 import Surahs from './assets/json/SurahList.json';
 import Popup from "reactjs-popup";
 import SurahInfo from './modules/SurahInfo/SurahInfo';
- 
+
 //import TextField from '@material-ui/core/TextField';
 
 //import PropTypes from 'prop-types';
@@ -137,6 +137,7 @@ class App extends React.Component {
         return false;
       }
 
+
       if(String(filter).split(':').length <= 1){
         if(this.state.selSurahNumber > 0){
           filter = this.state.selSurahNumber + ":" + filter;
@@ -173,15 +174,19 @@ class App extends React.Component {
         })
       }
 
-      this.setState({
+      /*this.setState({
          preloader: true
-      }, () => {
+      }, () => {*/
         cachedFetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/' + q_editions)
           .then(res => res.json())
           .then((data) => {
-            console.log(this.state.preloader);
-            console.log('done...');
+            //console.log(this.state.preloader);
+            //console.log('done...');
+            //console.log(data);
             this.setState({
+              selectedSurah: data.data[0].surah,
+              selSurahNumber: data.data[0].surah.number,
+              inputVal: data.data[0].numberInSurah,
               searchError:'',
               rawData :data
             }, () => this.processData(data));
@@ -192,8 +197,8 @@ class App extends React.Component {
              searchError: 'data error'
             })
           )
-        }
-      );
+        //}
+      //);
     }
     
      processData(results) {
@@ -271,6 +276,9 @@ class App extends React.Component {
       let navBackClass = this.state.navBtnClass.back;
       let navNextClass = this.state.navBtnClass.next; 
       let searchBtn;
+      this.setState({
+        preloader: true
+      })
       if(isValid){
         this.setState({
           inputVal: evt.target.value
@@ -338,14 +346,14 @@ class App extends React.Component {
       }, () => {this.ayahInput.focus()});
       
     }
-findLang(array, title) {
+/*findLang(array, title) {
     let result = array.filter(item => item.code === title );
     if(result.length){
       return result[0];
     } else {
       return false;
     }
-}
+}*/
 
 navigateAyah = (evt) => {
   let data = evt.target.getAttribute('data-value');
@@ -436,10 +444,7 @@ navigateAyah = (evt) => {
     )
     const selectedSurah = this.state.selectedSurah;
    //alert(this.state.selectedTrans);
-   const queryString = require('query-string');
-//var location = this.location;
-console.log(queryString);
-//console.log(queryString.parse(location.search)); <div className="triangle-right"><div className="inner"></div></div>
+console.log(window.location);
   return (
     <div className="page-wrapper">
       <header className="App-header">

@@ -93,24 +93,25 @@ function SurahInfo (props) {
     var nextBtnText = 'Next';
     var backBtnClass = navBackClass;
     var backBtnText = 'Back';
-
+//console.log(props.details.ayahNumber);
     //const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
 
     if(!inputVal){
         nextBtnText = 'First Ayah';
         backBtnText = ' ';
         backBtnClass += ' off';
-    }
+    } 
     
     return(
         <section className="titles-wrapper">
             <h2 className="surah-title">{selectedSurah.englishName} | {selectedSurah.name}</h2>
-            <p>Surah: <span className="clearer">{selectedSurah.number}</span> | {selectedSurah.englishNameTranslation}</p>
+            <p>{selectedSurah.englishNameTranslation}</p>
             
             <LangPopup 
                 processData={refreshData} 
                 translations={chkTrans} 
             />
+            <p>Holy Qur'an Ayah No: <span>{props.details.ayahNumber} / 60236</span></p>
 
             <div className="row-flex ayah-nav-wrapper margin top">
                 <a href="javascript:;" 
@@ -120,7 +121,7 @@ function SurahInfo (props) {
                 >
                     {backBtnText}
                 </a>
-                    <p>Ayah: <span className="clearer">{inputVal ? inputVal : '---'}</span></p>
+                    <p>Surah: <span className="clearer">{selectedSurah.number}</span> | Ayah: <span className="clearer">{inputVal ? inputVal : '---'}</span></p>
                 <a href="javascript:;" 
                     className={navNextClass} 
                     data-value="next" 
