@@ -36,6 +36,8 @@ h1{
   width: 100%;
   align-items: stretch;
   justify-content: space-between;
+  border-bottom: solid 1px #ccc;
+  padding-bottom:5px;
 }
 .nav-btn{
   text-decoration: none;
@@ -361,12 +363,18 @@ h1{
   text-align:center;
  // margin-top: 20px;
   color: #1d1d1d;
-  padding: 5px 10px 10px;
+  padding: 5px 10px 5px;
   border-bottom: solid 1px #e7e7e7;
   p{
     padding:0; //5px 0; 
     margin:0;
+    padding: 5px 0 3px;
+    //margin-top:10px;
     //margin-right: 10px;
+    &.ayah-nav-text{
+      padding: 0;
+
+    }
     .clearer{
       font-weight: bold;
       font-size: 1.2em;
@@ -414,15 +422,20 @@ h1{
     }
   }
 }
-
+.justify-content-space-between{
+  justify-content: space-between !important;
+}
 .lang-select{
-    flex: 0 0 30px;
+    flex: 0 0 30px; //30px;
     height: 30px;
     width: 230px; //270px;
     align-self: center;
-    margin-top: 10px;
+    margin-top:5px;
+    //padding-top: 5px;
     position: relative;
     text-align: center;
+    justify-content: flex-end;
+    
     //visibility: hidden;
     select{
       position: absolute;
@@ -447,6 +460,7 @@ h1{
       label{
         display: block;
         height: 30px;
+        text-align: center;
        // background-color: white;
         color: #999;
         span{

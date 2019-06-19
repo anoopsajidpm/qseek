@@ -58,7 +58,7 @@ const LangPopup =  (props) => {
 
       return  <div className='lang-select'>
         <section className='select-value-wrapper'>
-            <label onClick={showSelectLang}>Translation: <span>{selectedTrans.nativeName}</span></label>
+            <label onClick={showSelectLang}>Translation: <span>{selectedTrans.nativeName ? selectedTrans.nativeName : 'None'}</span></label>
         </section>
         <select onChange={evt => selectLang(evt)} id='q-lang' className={selectLangClass} onClick={showSelectLang}>
             <option value="denied">None</option>
@@ -105,13 +105,12 @@ function SurahInfo (props) {
     return(
         <section className="titles-wrapper">
             <h2 className="surah-title">{selectedSurah.englishName} | {selectedSurah.name}</h2>
+            
             <p>{selectedSurah.englishNameTranslation}</p>
             
-            <LangPopup 
-                processData={refreshData} 
-                translations={chkTrans} 
-            />
-            <p>Holy Qur'an Ayah No: <span>{props.details.ayahNumber} / 60236</span></p>
+            
+            
+            <p>Holy Qur'an Ayah No: <span className="clearer">{props.details.ayahNumber}</span> / 60236</p>
 
             <div className="row-flex ayah-nav-wrapper margin top">
                 <a href="javascript:;" 
@@ -121,7 +120,7 @@ function SurahInfo (props) {
                 >
                     {backBtnText}
                 </a>
-                    <p>Surah: <span className="clearer">{selectedSurah.number}</span> | Ayah: <span className="clearer">{inputVal ? inputVal : '---'}</span></p>
+                    <p className="ayah-nav-text">Surah: <span className="clearer">{selectedSurah.number}</span> | Ayah: <span className="clearer">{inputVal ? inputVal : '---'}</span></p>
                 <a href="javascript:;" 
                     className={navNextClass} 
                     data-value="next" 
@@ -130,6 +129,10 @@ function SurahInfo (props) {
                     {nextBtnText}
                 </a>
             </div>
+            <LangPopup 
+                processData={refreshData} 
+                translations={chkTrans} 
+            />
         </section>
     )
 }
