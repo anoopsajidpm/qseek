@@ -109,9 +109,9 @@ function SurahInfo (props) {
             <p>{selectedSurah.englishNameTranslation}</p>
             
             
-            
-            <p>Holy Qur'an Ayah No: <span className="clearer">{props.details.ayahNumber}</span> / 60236</p>
-
+            { props.details && 
+                <p>Holy Qur'an Ayah No: <span className="clearer">{props.details.ayahNumber}</span> / 60236</p>
+            }
             <div className="row-flex ayah-nav-wrapper margin top">
                 <a href="javascript:;" 
                     className={backBtnClass} 
