@@ -4,11 +4,33 @@ import './App.scss';
 import 'typeface-roboto';
 import Listview from './components/Listview/Listview';
 import Loader from './components/Loader/Loader';
-import Langs from './assets/json/langs.json';
+
 import Surahs from './assets/json/SurahList.json';
 import Popup from "reactjs-popup";
 import SurahInfo from './modules/SurahInfo/SurahInfo';
+import {
+  WhatsappShareButton,
+  EmailShareButton,
+} from 'react-share';
 
+/*import {
+  FacebookShareButton,
+  GooglePlusShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  TelegramShareButton,
+  WhatsappShareButton,
+  PinterestShareButton,
+  VKShareButton,
+  OKShareButton,
+  RedditShareButton,
+  TumblrShareButton,
+  LivejournalShareButton,
+  MailruShareButton,
+  ViberShareButton,
+  WorkplaceShareButton,
+  EmailShareButton,
+} from 'react-share';*/
 //import TextField from '@material-ui/core/TextField';
 
 //import PropTypes from 'prop-types';
@@ -32,6 +54,7 @@ import SurahInfo from './modules/SurahInfo/SurahInfo';
 //import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 
 //import Checkbox from './components/Checkbox/Checkbox';
+//import Qry from 'query-string';
 
 class App extends React.Component {
     constructor(props) {
@@ -81,17 +104,47 @@ class App extends React.Component {
       })
     }
     componentDidMount() {
+     
+     
       this.setState({
          preloader: true
       }, () => window.addEventListener('load', this.handleLoad));
     }
     
     handleLoad(){
-      //console.log(Langs);
-      /*this.setState({
-         preloader: true
-      });*/
       
+      //check whether the url has any parameters to process 
+     
+      let url_param = window.location.search;
+      let process_url = false;
+      if(url_param){
+        if(url_param.split(':').length <= 1){
+          if(url_param){
+            if(Number(url_param)){
+              process_url = true;
+            } else {
+              process_url = false;  
+            }
+          } else{
+            process_url = false;
+          }
+        } else {
+          //process_url = true;
+          if(url_param.split(':')[0] && url_param.split(':')[0] !== ''){
+            if(Number(url_param.split(':')[0])) {
+              process_url = true;
+            } else {
+              process_url = false;
+            }
+          } else {
+            process_url = false;
+          }
+        }
+        
+      }
+      if(process_url) {
+        console.log('process_url' + url_param);
+      }
        this.setState({
           surahList: Surahs.data,
           preloader: false
@@ -106,7 +159,6 @@ class App extends React.Component {
     validateInput(value){
       let isValid = true;
       let totAyahs;
-      //console.log(value);
       if(this.state.selectedSurah.number){
         totAyahs = Number(this.state.selectedSurah.numberOfAyahs);
       }
@@ -117,16 +169,24 @@ class App extends React.Component {
       if(Number(value) > totAyahs){
         isValid = false;
       }
-      //console.log(value);
       return isValid;
     }
     searchForAyah(event) {
       let filter = Number(this.state.inputVal);
+      
       let q_editions = (this.state.q_edition_ar + ',' + this.state.q_edition_trans + ',' + this.state.q_edition_audio) ;
       this.setState({
          preloader: true
-        });
+      });
+        
 
+      if(this.state.ayahDetails && this.state.ayahDetails.audio){
+        console.log(this.state.mainResult[0]);
+        this.setState({
+          preloader: true,
+          ayahDetails: {audio: ''}
+        })
+      }
       let isRefValid = this.validateInput(filter);
     
       if(!filter || !isRefValid){
@@ -174,15 +234,11 @@ class App extends React.Component {
         })
       }
 
-      /*this.setState({
-         preloader: true
-      }, () => {*/
+     
         cachedFetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/' + q_editions)
           .then(res => res.json())
           .then((data) => {
-            //console.log(this.state.preloader);
-            //console.log('done...');
-            //console.log(data);
+            console.log(data.data[0]);
             this.setState({
               selectedSurah: data.data[0].surah,
               selSurahNumber: data.data[0].surah.number,
@@ -193,12 +249,10 @@ class App extends React.Component {
           })
           .catch(
             this.setState({
-             preloader: false,
              searchError: 'data error'
             })
           )
-        //}
-      //);
+        
     }
     
      processData(results) {
@@ -206,6 +260,7 @@ class App extends React.Component {
       let audio = '';
       let details = null;
       let result = this.state.rawData;
+     
       if(!result || !result.data){
         console.log('no data');
         return false;
@@ -264,8 +319,9 @@ class App extends React.Component {
         }
         this.setState({ 
           ayahDetails: details, 
-          mainResult: res, 
+          mainResult: res,
           preloader: false
+          
         });
         return true;
     }
@@ -276,9 +332,7 @@ class App extends React.Component {
       let navBackClass = this.state.navBtnClass.back;
       let navNextClass = this.state.navBtnClass.next; 
       let searchBtn;
-      this.setState({
-        preloader: true
-      })
+      
       if(isValid){
         this.setState({
           inputVal: evt.target.value
@@ -311,19 +365,19 @@ class App extends React.Component {
 
     }
     verifyInputKey(evt) {
-      console.log('asdf');
+      //console.log('asdf');
       if(evt.keyCode === 186) { 
         this.setState({
           selSurahNumber: evt.target.value,
-          inputVal: '', 
-          preloader: true
+          inputVal: ''
         },() => this.fetchSurahDetails(Number(this.state.selSurahNumber)));
       }
     }
 
     selectSurah = (evt) => {
-      console.log(evt.target.value || evt.target.getAttribute('data-value'));
+      //console.log(evt.target.value || evt.target.getAttribute('data-value'));
       let dataVal = evt.target.value || evt.target.getAttribute('data-value');
+      
       this.setState({
         preloader: true
       }, () => this.fetchSurahDetails(Number(dataVal)));
@@ -388,7 +442,7 @@ navigateAyah = (evt) => {
     }
   this.setState({
     inputVal: String(valNow),
-    navBtnClass: {back: navBackClass, next: navNextClass},
+    navBtnClass: {back: navBackClass, next: navNextClass}
   }, () => this.searchForAyah(evt));
   
 }
@@ -406,12 +460,12 @@ navigateAyah = (evt) => {
     }
     const surahs = this.state.surahList;
     
-    const closeBubble = (evt) => {
+    /*const closeBubble = (evt) => {
       console.log(evt.target);
-    }
+    }*/
     const SurahPopup =  () => (
       <Popup
-        trigger={<a href="javascript:;" value="Surahs" className="surah-button">Surah</a>}
+        trigger={<button value="Surahs" className="surah-button">Surah</button>}
         on="click"
         position="center center"
         modal
@@ -444,13 +498,16 @@ navigateAyah = (evt) => {
     )
     const selectedSurah = this.state.selectedSurah;
    //alert(this.state.selectedTrans);
-console.log(window.location);
+   //<a href="javascript:;" onClick={this.searchForAyah} role="button" className={this.state.searchBtnClass}>Search</a>
+console.log(window.location.search);
+
   return (
     <div className="page-wrapper">
       <header className="App-header">
        <h1 onClick={this.resetView}>
           Q-Search
        </h1>
+       <WhatsappShareButton title="Q-search" url="http://localhost:3000/" />
       </header>
       {
         selectedSurah.number && 
@@ -499,8 +556,7 @@ console.log(window.location);
               <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs ? this.state.selectedSurah.numberOfAyahs : 6236 }</label>
             
           </div>
-          <a href="javascript:;" onClick={this.searchForAyah} role="button" className={this.state.searchBtnClass}>Search</a>
-          
+          <button onClick={this.searchForAyah} className={this.state.searchBtnClass} value="Search" >Search</button>
          </div> 
         </section>
       <div className='content-wrapper'>

@@ -19,7 +19,7 @@ let findLang = (array, title) => {
 
 
 const LangPopup =  (props) => {
-    console.log(props);
+    //console.log(props);
     let selectLangClass = 'hide';
 
     let selectLang = evt => {
@@ -101,7 +101,18 @@ function SurahInfo (props) {
         backBtnText = ' ';
         backBtnClass += ' off';
     } 
-    
+    /*<a href="javascript:;" 
+                    className={backBtnClass} 
+                    data-value="back" 
+                    onClick={navBack}
+                >
+                <a href="javascript:;" 
+                    className={navNextClass} 
+                    data-value="next" 
+                    onClick={navNext}
+                >
+                */
+
     return(
         <section className="titles-wrapper">
             <h2 className="surah-title">{selectedSurah.englishName} | {selectedSurah.name}</h2>
@@ -113,21 +124,15 @@ function SurahInfo (props) {
                 <p>Holy Qur'an Ayah No: <span className="clearer">{props.details.ayahNumber}</span> / 60236</p>
             }
             <div className="row-flex ayah-nav-wrapper margin top">
-                <a href="javascript:;" 
-                    className={backBtnClass} 
-                    data-value="back" 
-                    onClick={navBack}
-                >
+                
+                <button className={backBtnClass} value="Back" data-value="back" onClick={navBack} >
                     {backBtnText}
-                </a>
+                </button>
                     <p className="ayah-nav-text">Surah: <span className="clearer">{selectedSurah.number}</span> | Ayah: <span className="clearer">{inputVal ? inputVal : '---'}</span></p>
-                <a href="javascript:;" 
-                    className={navNextClass} 
-                    data-value="next" 
-                    onClick={navNext}
-                >
+                <button className={navNextClass} value="Next" data-value="next" onClick={navNext} >
+                
                     {nextBtnText}
-                </a>
+                </button>
             </div>
             <LangPopup 
                 processData={refreshData} 

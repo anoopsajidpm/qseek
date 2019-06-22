@@ -48,6 +48,11 @@ h1{
   text-decoration: none;
   color: #aaa;
   background-color: #fff;
+  border: none 0;
+  outline: none;
+  /*&:focus{
+    outline: solid 2px;
+  }*/
   &.back{
     background: url(./assets/images/back-arrow.svg) no-repeat left center;
     background-size:auto 80%;
@@ -155,7 +160,7 @@ h1{
     background-size: 80% auto;
 
     text-indent: -99999px;
-    
+    border: none 0;
    border-right: solid 1px rgba(255,255,255, 0.3);
     
 
@@ -174,7 +179,7 @@ h1{
     //border-left: solid 1px #595858;
     color: #999;
     background: url(./assets/images/indicator-right.svg) no-repeat left center;
-    background-size: auto 12px;
+    background-size: auto 10px;
     
 
   }
@@ -239,13 +244,14 @@ h1{
 .search-btn{
     flex: 0 0 35px;
     padding-left: 10px;
-    //background: url(./assets/images/search-icon.svg) no-repeat right center;
     background-image: url(./assets/images/indicator-right.svg), url(./assets/images/search-icon.svg);
     background-position: left center, right center;
+    border: none 0;
     background-repeat: no-repeat, no-repeat;
-    background-size: auto 12px, auto 70%;
-  text-indent: -99999px;
-  border-left: solid 1px rgba(255,255,255, 0.3);
+    background-size: auto 10px, auto 60%;
+    text-indent: -99999px;
+    border-left: solid 1px rgba(255, 255, 255, 0.3);
+    background-color: transparent;
 
   &.inactive{
     background-image: url(./assets/images/indicator-right.svg), url(./assets/images/search-icon-dis.svg);

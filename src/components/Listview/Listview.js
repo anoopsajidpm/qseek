@@ -21,7 +21,7 @@ import Divider from '@material-ui/core/Divider';*/
   const getLangName = (code) => {
     // function to get the language name from code
     let lang = Langs.filter(item => item.code === code);
-    console.log(lang);
+    //console.log(lang);
     return (lang[0].name !== 'English' ? lang[0].name + ' | ' + lang[0].nativeName : lang[0].name);
   }
 
@@ -42,7 +42,7 @@ import Divider from '@material-ui/core/Divider';*/
                 <span className="ayah-details">{getLangName(value.edition.language)}</span>
               }
 
-              { value.edition.language === 'ar' && 
+              { (value.edition.language === 'ar' && details.audio) && 
                 <audio controls="controls" className="q-audio-player">
                   <source src={details.audio} type="audio/wav" />
                   Your browser does not support the <code>audio</code> element. 
