@@ -10,16 +10,16 @@
 }
 
 .App-header {
-  background-color:#5AC7F4; // #282c34;
- // min-height: 100vh;
+  background-color:#5AC7F4; 
   display: flex;
   flex-direction: row;
   align-items: stretch;
   min-height: 40px;
   justify-content: center;
-  font-size: 1em; //calc(10px + 2vmin);
+  font-size: 1em; 
   color: white;
   vertical-align: middle;
+  position: relative;
   h1{
     font-size:1.5em !important;
     margin:0;
@@ -501,4 +501,10 @@ h1{
 
     }
   }
+}
+.wa-btn{
+  width:20px;
+  height:30px;
+  position: absolute;
+  right: 10px;
 }

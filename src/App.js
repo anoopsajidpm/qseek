@@ -500,6 +500,10 @@ navigateAyah = (evt) => {
    //alert(this.state.selectedTrans);
    //<a href="javascript:;" onClick={this.searchForAyah} role="button" className={this.state.searchBtnClass}>Search</a>
 console.log(window.location.search);
+    let share_url = '';
+    if(selectedSurah && this.state.inputVal){
+      share_url = window.location + '?' + selectedSurah.number + ':' + this.state.inputVal;
+  }
 
   return (
     <div className="page-wrapper">
@@ -507,7 +511,9 @@ console.log(window.location.search);
        <h1 onClick={this.resetView}>
           Q-Search
        </h1>
-       <WhatsappShareButton title="Q-search" url="http://localhost:3000/" />
+       {(share_url !== '') &&
+       <WhatsappShareButton title="Q-search - Find Ayahs in Qur'an" url={share_url} className="wa-btn" />
+       }
       </header>
       {
         selectedSurah.number && 
