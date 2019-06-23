@@ -93,25 +93,13 @@ function SurahInfo (props) {
     var nextBtnText = 'Next';
     var backBtnClass = navBackClass;
     var backBtnText = 'Back';
-//console.log(props.details.ayahNumber);
-    //const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
 
     if(!inputVal){
         nextBtnText = 'First Ayah';
         backBtnText = ' ';
         backBtnClass += ' off';
     } 
-    /*<a href="javascript:;" 
-                    className={backBtnClass} 
-                    data-value="back" 
-                    onClick={navBack}
-                >
-                <a href="javascript:;" 
-                    className={navNextClass} 
-                    data-value="next" 
-                    onClick={navNext}
-                >
-                */
+
 
     return(
         <section className="titles-wrapper">
@@ -121,7 +109,7 @@ function SurahInfo (props) {
             
             
             { props.details && 
-                <p>Holy Qur'an Ayah No: <span className="clearer">{props.details.ayahNumber}</span> / 60236</p>
+                <p>Holy Qur'an Ayah No: <span className="clearer">{props.details.ayahNumber}</span> / 6236</p>
             }
             <div className="row-flex ayah-nav-wrapper margin top">
                 

@@ -11,6 +11,7 @@ import SurahInfo from './modules/SurahInfo/SurahInfo';
 import {
   WhatsappShareButton,
   EmailShareButton,
+  WhatsappIcon
 } from 'react-share';
 
 /*import {
@@ -71,20 +72,20 @@ class App extends React.Component {
         selSurahNumber: 0,
         selectedTrans: '',
         preloader: true,
-        langIsOpen: false,
         chkTrans: {'english': false, 'malayalam' : false},
         q_edition_ar: 'quran-simple-enhanced',
         q_edition_trans: ['en.asad', 'ml.abdulhameed'], //'en.pickthall', 
         q_edition_audio: 'ar.alafasy',
         navBtnClass: {'back':'nav-btn back', 'next':'nav-btn next'},
-        searchBtnClass: 'search-btn inactive'
+        searchBtnClass: 'search-btn inactive',
+        url_search: '',
+        total_ayahs: 0
       }
       //const langs = JSON.parse('./langs.json');
       this.handleLoad = this.handleLoad.bind(this);
       this.processData = this.processData.bind(this);
       this.resetView = this.resetView.bind(this);
       this.searchForAyah = this.searchForAyah.bind(this);
-      this.langPopupOnOpen = this.langPopupOnOpen.bind(this);
     }
     
     
@@ -98,64 +99,128 @@ class App extends React.Component {
         searchError: '',
         selectedSurah: {},
         selSurahNumber: 0,
-        langIsOpen: false,
         selectedTrans: '',
+        usr_search: '',
         chkTrans: {'english': false, 'malayalam' : false}
       })
     }
     componentDidMount() {
-     
-     
       this.setState({
          preloader: true
       }, () => window.addEventListener('load', this.handleLoad));
     }
     
     handleLoad(){
+      this.setState({
+        surahList: Surahs.data,
+        total_ayahs: this.getTotalAyahCount(Surahs.data),
+        url_origin: window.location.origin,
+        url_search: this.extractSearchStrings(window.location.search),
+        preloader: false
+      }, () => this.checkForSearchString());    
+    }
+
+    getTotalAyahCount(surahs) {
+      let totalAyah = 0;
+      surahs.map(sur => {
+        totalAyah += sur.numberOfAyahs
+      })
+      return totalAyah;
+    }
+   checkForSearchString() {
+     let search_string = this.state.url_search;
+      console.log(search_string);
       
-      //check whether the url has any parameters to process 
-     
-      let url_param = window.location.search;
-      let process_url = false;
-      if(url_param){
-        if(url_param.split(':').length <= 1){
-          if(url_param){
-            if(Number(url_param)){
-              process_url = true;
-            } else {
-              process_url = false;  
-            }
-          } else{
-            process_url = false;
+      if (search_string){
+        let sur; // = search_string.split(':')[0];
+        if(search_string.split(':').length >= 2){
+          sur = search_string.split(':')[0];
+          if(Number(sur) > 114) { // if above than total surahs
+            console.log('invalid surah');
+          } else { // if valid surah number 
+            this.setState({
+              selSurahNumber: sur,
+              inputVal: ''
+            },() => this.fetchSurahDetails(Number(this.state.selSurahNumber)));
           }
+
+          if(search_string.split(':')[1] && Number(search_string.split(':')[1])){
+            console.log(this.state.selectedSurah);
+
+            this.setState({
+              inputVal: search_string.split(':')[1]
+            },() => this.searchForAyah());
+          }
+         
         } else {
-          //process_url = true;
-          if(url_param.split(':')[0] && url_param.split(':')[0] !== ''){
-            if(Number(url_param.split(':')[0])) {
-              process_url = true;
-            } else {
-              process_url = false;
-            }
+          if(Number(search_string) <= this.state.total_ayahs){
+            this.setState({
+              inputVal: search_string
+            },() => this.searchForAyah());
           } else {
-            process_url = false;
+            console.log('Invalid reference');
           }
         }
         
       }
-      if(process_url) {
-        console.log('process_url' + url_param);
+   }
+extractSearchStrings(url_param){
+  
+  //let url_param = window.location.search;
+      let url_string = '';
+  //let url_param = this.state.url_search;
+  let str_split = [];
+  let valid;
+  if(url_param){
+    url_param = String(url_param).replace('?','');
+    str_split = url_param.split(':'); // if -> ?<surahnumber>:<ayahnumber>
+    if(str_split.length > 1){
+      str_split.map(str => {
+        if(Number(str)) {
+          valid = true;
+        } else {
+          valid = false;
+        }
+      });
+      if(valid){
+          url_string = url_param;
       }
-       this.setState({
-          surahList: Surahs.data,
-          preloader: false
+    } else {
+      str_split = url_param.split('&'); // if -> ?surah=<num>&ayah=<num>
+      let res = [];
+      if(str_split.length > 1){ // if param has 2 parts
+        str_split.map(str => {
+          let parts = str.split('='); // e.g: foo='bar'
+          if(parts.length === 2){ // if <search>=<value>
+            if(Number(parts[1])){
+              res.push(parts[1]);
+            }
+          } else {
+            if(Number(parts[0])){
+              res.push(parts[0]);
+            }
+          }
         });
-    }
+        url_string = String(res).replace(',',':');
+      } else { // if param has only 1 part
+         let parts = str_split[0].split('='); // e.g: foo='bar'
+          if(parts.length === 2){ // if <search>=<value>
+            if(Number(parts[1])){
+              url_string = parts[1];
+            }
+          } else {
+            if(Number(parts[0])){
+              url_string = parts[0];
+            }
+          }
+      }
 
-    langPopupOnOpen(){
-      this.setState({
-        langIsOpen: true
-      })
     }
+    
+  }
+   return url_string;
+  
+}
     validateInput(value){
       let isValid = true;
       let totAyahs;
@@ -499,7 +564,7 @@ navigateAyah = (evt) => {
     const selectedSurah = this.state.selectedSurah;
    //alert(this.state.selectedTrans);
    //<a href="javascript:;" onClick={this.searchForAyah} role="button" className={this.state.searchBtnClass}>Search</a>
-console.log(window.location.search);
+console.log(window.location.origin);
     let share_url = '';
     if(selectedSurah && this.state.inputVal){
       share_url = window.location + '?' + selectedSurah.number + ':' + this.state.inputVal;
@@ -512,8 +577,10 @@ console.log(window.location.search);
           Q-Search
        </h1>
        {(share_url !== '') &&
+       
        <WhatsappShareButton title="Q-search - Find Ayahs in Qur'an" url={share_url} className="wa-btn" />
-       }
+      
+      }
       </header>
       {
         selectedSurah.number && 
@@ -523,13 +590,11 @@ console.log(window.location.search);
           onNavNext={this.navigateAyah} 
           onNavBack ={this.navigateAyah} 
           selectedSurah ={selectedSurah}
+          totalAyahs = {this.state.total_ayahs}
           navBackClass = {this.state.navBtnClass.back}
           navNextClass = {this.state.navBtnClass.next}
-          langPopupOpen = {this.state.langIsOpen}
-          selectedLang = {this.state.selectedTrans}
           translations = {this.state.chkTrans}
           inputVal = {this.state.inputVal}
-          langPopupOnOpen = {this.langPopupOnOpen}
           refreshData = {this.processData}
           />
       }
