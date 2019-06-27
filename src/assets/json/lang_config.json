@@ -1,0 +1,13 @@
+[{
+		"active": false,
+		"code": "en",
+		"name": "English",
+		"nativeName": "English"
+	},
+	{
+		"active": true,
+		"code": "ml",
+		"name": "Malayalam",
+		"nativeName": "മലയാളം"
+	}
+]

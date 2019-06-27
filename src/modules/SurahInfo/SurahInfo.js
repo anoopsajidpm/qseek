@@ -1,18 +1,42 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import Langs from '../../assets/json/langs.json';
+import trans_conf from '../../assets/json/lang_config.json';
 //import Popup from "reactjs-popup";
 
-const chkTrans = {'english': false, 'malayalam' : false};
-const filteredLangs = Langs.filter(item => item.code === 'en' || item.code === 'ml' );
+var chkTrans = {}; // = {'english': false, 'malayalam' : false};
+
+let filteredLangs ; //Langs.filter(item => item.code === 'en' || item.code === 'ml' );
+let defaultTrans = undefined;
 let popupStatus = false ;
-let selectedTrans = '';
+
+
+let filteredTrans = () => {
+    let res = [];
+    
+    let test = {};
+    console.log(trans_conf);
+    trans_conf.map(lng => {
+        let temp = Langs.filter(item => item.code === lng.code)[0];
+        res.push(temp);
+        temp.active = lng.active; //)? true :false;
+        
+        /*if(Number(lng.active)){
+            //setTrans(temp);
+            selectedTrans = temp;
+        }*/
+    })
+    //console.log(trans_active);
+    //console.log(selectedTrans);
+    return res;
+}
+
 let findLang = (array, title) => {
     let result = array.filter(item => item.code === title );
     if(result.length){
-    return result[0];
+        return result[0];
     } else {
-    return false;
+        return false;
     }
 }
 
@@ -21,35 +45,42 @@ let findLang = (array, title) => {
 const LangPopup =  (props) => {
     //console.log(props);
     let selectLangClass = 'hide';
+    //let [selectedTrans, setTrans] = useState(props.translations);
+
+    //let selectedTrans = props.translations;
+    //console.log(props.translations);
+    let selectedTrans;
+    filteredLangs = trans_conf; // filteredTrans();
+    if(filteredLangs && filteredLangs.length){
+        defaultTrans = filteredLangs.filter(item => item.active );
+    }
+
+    if(defaultTrans.length){
+        //setTrans(defaultTrans[0]);
+        selectedTrans = defaultTrans[0];
+    } else {
+        selectedTrans = undefined;
+    }
+
+    //console.log(selectedTrans);
 
     let selectLang = evt => {
-        //const refreshData = props.refreshData;
-        console.log(evt.target);
         let lng = evt.target.value; //getAttribute('data-value');
-        let eng = chkTrans.english;
-        let mal = chkTrans.malayalam;
-        switch (lng){
-        case 'en':
-            eng = true; //!eng;
-            mal = false;
-            
-            break;
-        case 'ml':
-            mal = true; //!mal;
-            eng = false;
-            break;
-        default:
-        }
-        //this.setState({
-        props.translations.english = eng;
-        props.translations.malayalam = mal; 
-        popupStatus = false;
-        //setPopupStatus(false);
         
-        selectedTrans = findLang(Langs,lng);
-        props.processData();
-        selectLangClass = 'hide';
-        console.log(popupStatus);
+        let temp = filteredLangs.filter(item => item.code === lng );
+
+        if(temp.length){
+            selectedTrans = {
+                code: temp[0].code, 
+                name: temp[0].name, 
+                nativeName: temp[0].nativeName, 
+                active: true
+            };
+        } else {
+            selectedTrans = undefined;
+        }
+
+        props.onChange(selectedTrans);
     }
 
       let showSelectLang = () => {
@@ -58,7 +89,12 @@ const LangPopup =  (props) => {
 
       return  <div className='lang-select'>
         <section className='select-value-wrapper'>
-            <label onClick={showSelectLang}>Translation: <span>{selectedTrans.nativeName ? selectedTrans.nativeName : 'None'}</span></label>
+            <label >Translation: 
+                <span>
+                    {props.translations.nativeName ? ' ' + props.translations.nativeName : ' None'}
+                </span>
+            </label>
+
         </section>
         <select onChange={evt => selectLang(evt)} id='q-lang' className={selectLangClass} onClick={showSelectLang}>
             <option value="denied">None</option>
@@ -83,11 +119,15 @@ function SurahInfo (props) {
     const navNextClass = props.navNextClass;
     const navBackClass = props.navBackClass;
     const refreshData = props.refreshData;
-
+    //selectedTrans = props.selectedTrans;
+    
     //const langPopupOpen = props.langPopupOpen;
     //const onLangChange = props.onSelectLang;
-    const chkTrans = props.translations;
+    //chkTrans = props.translations;
+
+    
     const inputVal = props.inputVal;
+    //filteredLangs = props.filteredTrans;
     //const onPopupOpen = props.langPopupOnOpen;
 
     var nextBtnText = 'Next';
@@ -103,9 +143,9 @@ function SurahInfo (props) {
 
     return(
         <section className="titles-wrapper">
-            <h2 className="surah-title">{selectedSurah.englishName} | {selectedSurah.name}</h2>
+            <h2 className="surah-title"> {selectedSurah.name}</h2>
             
-            <p>{selectedSurah.englishNameTranslation}</p>
+            <p><span className="clearer small">{selectedSurah.englishName}</span> | {selectedSurah.englishNameTranslation}</p>
             
             
             { props.details && 
@@ -124,7 +164,8 @@ function SurahInfo (props) {
             </div>
             <LangPopup 
                 processData={refreshData} 
-                translations={chkTrans} 
+                translations={props.selectedTrans}
+                onChange={props.selectTrans}
             />
         </section>
     )

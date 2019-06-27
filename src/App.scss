@@ -15,11 +15,12 @@
   flex-direction: row;
   align-items: stretch;
   min-height: 40px;
-  justify-content: center;
+  justify-content: space-between;
   font-size: 1em; 
   color: white;
   vertical-align: middle;
   position: relative;
+  padding: 0 10px;
   h1{
     font-size:1.5em !important;
     margin:0;
@@ -146,6 +147,16 @@ h1{
   text-align: center;
   width: 100%;
 }
+.share-button {
+    width: 35px;
+    padding-right: 10px;
+    background: url(./assets/images/share-icon.svg) no-repeat right center ;
+    background-size: 70% auto;
+
+    text-indent: -99999px;
+    border: none 0;
+   //border-right: solid 1px rgba(255,255,255, 0.3);
+  }
 .ayah-input-wrapper{
       /* margin-bottom: 10px; */
     width: 100%;
@@ -165,6 +176,8 @@ h1{
     
 
   }
+
+  
   .surah-name{
         //color: #1d1d1d;
    // font-weight: bold;
@@ -307,20 +320,19 @@ h1{
   border: none 0 !important;
 }
 .q-audio-player{
-    //position: fixed;
-    //top: 14px;
-    //right: 0;
     height: 30px;
-    width: 100%; //calc(100% - 120px);
+    width: 100%;
     background-color: #efefef;
 }
 
-.surah-wrapper{
+.popup-wrapper{
   width:100%;    
   border-radius: 5px;
+  color: #1d1d1d;
   h3{
     width: 100%;
     text-align:center;
+    margin:5px 0;
   }
   ul{
   max-height:300px;
@@ -359,6 +371,11 @@ h1{
     border-bottom: 18px solid transparent;
     }
 }
+.share-msg {
+  width: 95%;
+  align-self: center;
+  margin: 0 auto;
+}
 .titles-wrapper{
   display: flex;
   flex-direction: column;
@@ -384,6 +401,9 @@ h1{
     .clearer{
       font-weight: bold;
       font-size: 1.2em;
+      &.small {
+        font-size: 1em;
+      }
     }
   }
 }
@@ -505,6 +525,7 @@ h1{
 .wa-btn{
   width:20px;
   height:30px;
-  position: absolute;
-  right: 10px;
+  //position: absolute;
+  //right: 10px;
+  background-color: blue;
 }

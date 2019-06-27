@@ -1,19 +1,31 @@
 
+//main
 import React from 'react';
-import './App.scss';
-import 'typeface-roboto';
-import Listview from './components/Listview/Listview';
-import Loader from './components/Loader/Loader';
 
-import Surahs from './assets/json/SurahList.json';
-import Popup from "reactjs-popup";
-import SurahInfo from './modules/SurahInfo/SurahInfo';
+//styles
+import './App.scss';
+
+//downloaded componenets
+import 'typeface-roboto'; // font support 
 import {
   WhatsappShareButton,
   EmailShareButton,
   WhatsappIcon
 } from 'react-share';
+import Popup from "reactjs-popup";
 
+//JSON
+import Surahs from './assets/json/SurahList.json';
+import trans_conf from './assets/json/lang_config.json';
+import Langs from './assets/json/langs.json';
+import Editions from './assets/json/editions.json';
+
+//custom componenets
+import SurahInfo from './modules/SurahInfo/SurahInfo';
+import Listview from './components/Listview/Listview';
+import Loader from './components/Loader/Loader';
+
+//unused - to remove
 /*import {
   FacebookShareButton,
   GooglePlusShareButton,
@@ -54,7 +66,6 @@ import {
 //import Favorite from '@material-ui/icons/Favorite';
 //import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 
-//import Checkbox from './components/Checkbox/Checkbox';
 //import Qry from 'query-string';
 
 class App extends React.Component {
@@ -70,9 +81,10 @@ class App extends React.Component {
         searchBlockClass: 'search-wrapper',
         selectedSurah: {},
         selSurahNumber: 0,
-        selectedTrans: '',
         preloader: true,
-        chkTrans: {'english': false, 'malayalam' : false},
+        defaultTrans: {},
+        //filteredLangs: {},
+
         q_edition_ar: 'quran-simple-enhanced',
         q_edition_trans: ['en.asad', 'ml.abdulhameed'], //'en.pickthall', 
         q_edition_audio: 'ar.alafasy',
@@ -86,23 +98,12 @@ class App extends React.Component {
       this.processData = this.processData.bind(this);
       this.resetView = this.resetView.bind(this);
       this.searchForAyah = this.searchForAyah.bind(this);
+      this.selectTranslation = this.selectTranslation.bind(this);
     }
     
     
     resetView() {
-      //alert('asdf');
-      this.setState({
-        inputVal: '',
-        ayahDetails: null,
-        mainResult: [],
-        rawData: null,
-        searchError: '',
-        selectedSurah: {},
-        selSurahNumber: 0,
-        selectedTrans: '',
-        usr_search: '',
-        chkTrans: {'english': false, 'malayalam' : false}
-      })
+      window.location.search = '';
     }
     componentDidMount() {
       this.setState({
@@ -116,8 +117,11 @@ class App extends React.Component {
         total_ayahs: this.getTotalAyahCount(Surahs.data),
         url_origin: window.location.origin,
         url_search: this.extractSearchStrings(window.location.search),
+        defaultTrans: trans_conf.filter(item => item.active)[0],
         preloader: false
-      }, () => this.checkForSearchString());    
+      }, () => this.checkForSearchString());  
+        
+      
     }
 
     getTotalAyahCount(surahs) {
@@ -146,6 +150,7 @@ class App extends React.Component {
 
           if(search_string.split(':')[1] && Number(search_string.split(':')[1])){
             console.log(this.state.selectedSurah);
+            
 
             this.setState({
               inputVal: search_string.split(':')[1]
@@ -167,7 +172,7 @@ class App extends React.Component {
 extractSearchStrings(url_param){
   
   //let url_param = window.location.search;
-      let url_string = '';
+  let url_string = '';
   //let url_param = this.state.url_search;
   let str_split = [];
   let valid;
@@ -221,6 +226,23 @@ extractSearchStrings(url_param){
    return url_string;
   
 }
+
+filteredTrans() {
+    let res = [];
+    let test = {};
+    trans_conf.map(lng => {
+        let temp = Langs.filter(item => item.code === lng.code)[0];
+        res.push(temp);
+        temp.active = Number(lng.active)? true :false;
+        
+        if(Number(lng.active)){
+            this.selectTranslation(temp);
+        }
+    })
+    //console.log(this.state.selectedTrans);
+    return res;
+}
+
     validateInput(value){
       let isValid = true;
       let totAyahs;
@@ -320,6 +342,30 @@ extractSearchStrings(url_param){
         
     }
     
+    selectTranslation(trans){
+      console.log(trans);
+
+      let refreshData = false;
+      if(this.state.defaultTrans) {
+        if(trans){
+          if(this.state.defaultTrans.code !== trans.code){
+            refreshData = true;
+          }
+        } else {
+          refreshData = true;
+        }
+      } else {
+        if(trans){
+          refreshData = true;
+        }
+      }
+      if(refreshData){
+        this.setState({
+          defaultTrans: trans
+        }, () => this.processData(this.state.rawData));
+      }
+    }
+
      processData(results) {
       let res = [];
       let audio = '';
@@ -333,26 +379,26 @@ extractSearchStrings(url_param){
       
         result.data.map(item => {
             let filteredItem = null;
-            var flag = true;
+            var flag = false;
             /* separate audio details */
             if(!item.audio){
               
               filteredItem = {'edition': item.edition, 'text': item.text};
-              switch(item.edition.language){
-                case 'en':
-                  flag = this.state.chkTrans.english;
-                  break;
-                case 'ml':
-                  flag = this.state.chkTrans.malayalam;
-                  break;
-                default:
-                  flag = true;
-                  
+              
+              if(item.edition.language === 'ar') {
+                flag = true;
+              } else {
+                if(this.state.defaultTrans) {
+                  if(item.edition.language === this.state.defaultTrans.code){
+                    flag = true;
+                  }
+                }
               }
+
               if(flag){
                 res.push(filteredItem);
               }
-              flag = true;
+              //flag = true;
             }
             else{
               if(audio === ''){
@@ -457,7 +503,7 @@ extractSearchStrings(url_param){
           selSurahNumber: selSurah[0].number
         }, () => {console.log(this.state.selectedSurah)});
       }
-      
+     // console.log(this.state.selectedSurah);
       this.setState({ 
         ayahDetails: {},
         mainResult: [], 
@@ -465,14 +511,14 @@ extractSearchStrings(url_param){
       }, () => {this.ayahInput.focus()});
       
     }
-/*findLang(array, title) {
+findLang = (array, title) => {
     let result = array.filter(item => item.code === title );
     if(result.length){
-      return result[0];
+        return result[0];
     } else {
-      return false;
+        return false;
     }
-}*/
+}
 
 navigateAyah = (evt) => {
   let data = evt.target.getAttribute('data-value');
@@ -515,6 +561,11 @@ navigateAyah = (evt) => {
     let listview;
 // url is 'https://www.example.com/user?id=123&type=4';
   
+    /*let default_trans = trans_conf.filter(item => item.active === '1');
+
+    if(default_trans.length){
+
+    }*/
 
     if(this.state.mainResult.length){
       listview = <Listview 
@@ -524,7 +575,44 @@ navigateAyah = (evt) => {
         />
     }
     const surahs = this.state.surahList;
-    
+    const selectedSurah = this.state.selectedSurah;
+    let share_url = '';
+    if(selectedSurah && this.state.inputVal){
+        share_url = this.state.url_origin + '?' + selectedSurah.number + ':' + this.state.inputVal;
+    }
+    const SharePopup =  () => (
+      <Popup
+        trigger={<button value="Share" className="share-button">Share</button>}
+        on="click"
+        position="center center"
+        modal
+        closeOnDocumentClick
+        className="surah-popup"
+        onRequestClose={() => {
+          this.setState({ modalIsOpen: false });
+        }}
+      >
+        <div className="popup-wrapper">
+          <h3>Share this Ayah ({this.state.selSurahNumber}:{this.state.inputVal})</h3>
+          <div className="share-content-wrapper">
+            <label htmlFor="share-message" >Message (optional)</label>
+            <textarea placeholder="Enter message, if any" rows="4" cols="38" className="share-msg" maxLength="120" autofocus="autofocus" />
+            <WhatsappShareButton 
+              title="Q-search - Check this Ayah" 
+              url={share_url} 
+              seperator=" "
+              className="wa-btn"  
+              />
+            </div>
+            <EmailShareButton 
+              subject="Q-search - check this ayah"
+              body="body text goes here"
+              seperator="^"
+              openWindow="true"
+            />
+        </div>
+      </Popup>
+    )
     /*const closeBubble = (evt) => {
       console.log(evt.target);
     }*/
@@ -540,7 +628,7 @@ navigateAyah = (evt) => {
           this.setState({ modalIsOpen: false });
         }}
       >
-      <div className="surah-wrapper">
+      <div className="popup-wrapper">
         <h3>Select Surah:</h3>
         <ul className="surah-list-ul">
           <li className="row-flex list-heads">
@@ -561,14 +649,7 @@ navigateAyah = (evt) => {
       </div>
       </Popup>
     )
-    const selectedSurah = this.state.selectedSurah;
-   //alert(this.state.selectedTrans);
-   //<a href="javascript:;" onClick={this.searchForAyah} role="button" className={this.state.searchBtnClass}>Search</a>
-console.log(window.location.origin);
-    let share_url = '';
-    if(selectedSurah && this.state.inputVal){
-      share_url = window.location + '?' + selectedSurah.number + ':' + this.state.inputVal;
-  }
+    
 
   return (
     <div className="page-wrapper">
@@ -576,10 +657,9 @@ console.log(window.location.origin);
        <h1 onClick={this.resetView}>
           Q-Search
        </h1>
-       {(share_url !== '') &&
-       
-       <WhatsappShareButton title="Q-search - Find Ayahs in Qur'an" url={share_url} className="wa-btn" />
-      
+       {
+         /*(share_url !== '') &&
+        <SharePopup /> */
       }
       </header>
       {
@@ -593,9 +673,10 @@ console.log(window.location.origin);
           totalAyahs = {this.state.total_ayahs}
           navBackClass = {this.state.navBtnClass.back}
           navNextClass = {this.state.navBtnClass.next}
-          translations = {this.state.chkTrans}
           inputVal = {this.state.inputVal}
           refreshData = {this.processData}
+          selectedTrans = {this.state.defaultTrans}
+          selectTrans = {this.selectTranslation}
           />
       }
         <section className={this.state.searchBlockClass} id="search-block">
