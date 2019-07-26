@@ -151,7 +151,7 @@ h1{
     width: 35px;
     padding-right: 10px;
     background: url(./assets/images/share-icon.svg) no-repeat right center ;
-    background-size: 70% auto;
+    background-size: 55% auto;
 
     text-indent: -99999px;
     border: none 0;
@@ -355,6 +355,76 @@ h1{
   }
 }
 
+.surahlist-container{
+  width:100%;    
+  //border-radius: 5px;
+  color: #1d1d1d;
+  margin-bottom: 50px;
+  h3{
+    width: 100%;
+    text-align:center;
+    margin:5px 0;
+  }
+  ul{
+  //max-height:300px;
+  overflow: auto;
+    margin:0;padding: 0;
+    //padding:10px;
+    li{
+      list-style: none;
+      min-height:30px;
+      vertical-align:middle;
+      padding:10px;
+      cursor: pointer;
+      &:nth-child(even){
+        background-color:#f6f6f6;
+      }
+      &:hover{
+        background-color:#e7e7e7;
+      }
+    }
+  }
+  .surah-list-ul {
+    li{
+      .sayah {
+        font-weight: bold;
+        text-align: right;
+        padding-right: 15px;
+        
+        
+      }
+      .sno {
+        text-align: right;
+        margin:0; padding: 0;
+        padding-right: 10px;
+      }
+      .sname, .sname-ar{
+        text-align:right;
+        flex: 1 1 100%;
+        margin:3px; padding:0;
+        
+        font-size: 0.9em;
+      }
+      .sname-ar {
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+
+    }
+  }
+}
+.blue-text {
+  color: #2196f3;
+  font-weight: bold;
+}
+.lighter {
+  color: #999;
+}
+.surahname-wrapper {
+  text-align: right;
+  flex-basis: 100%;
+}
+
 .triangle-right {
 	  width: 0;
     height: 0;
@@ -522,10 +592,22 @@ h1{
     }
   }
 }
-.wa-btn{
-  width:20px;
+.share-actions{
+  border-top: solid 1px #e7e7e7;
+  align-items: center;
+    justify-content: flex-end;
+    padding: 5px 10px;
+  p{
+    margin:0; padding:0;
+
+  }
+}
+.social-btn{
+  width:30px;
   height:30px;
+  margin: 5px 0 5px 10px;
   //position: absolute;
   //right: 10px;
-  background-color: blue;
+ 
+
 }
