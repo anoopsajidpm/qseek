@@ -18,45 +18,45 @@ import Divider from '@material-ui/core/Divider';*/
 //import Slide from '@material-ui/core/Slide';
 //import Copier from '../../modules/Copier/Copier';
 
-  const getLangName = (code) => {
-    // function to get the language name from code
-    let lang = Langs.filter(item => item.code === code);
-    //console.log(lang);
-    return (lang[0].name !== 'English' ? lang[0].name + ' | ' + lang[0].nativeName : lang[0].name);
-  }
+const getLangName = (code) => {
+  // function to get the language name from code
+  let lang = Langs.filter(item => item.code === code);
+  //console.log(lang);
+  return (lang[0].name !== 'English' ? lang[0].name + ' | ' + lang[0].nativeName : lang[0].name);
+}
 
-  function Listview(props) {
-    
-    const results = props.results;
-    const details = props.details;
+function Listview(props) {
 
-    if(!props.results) return null;
+  const results = props.results;
+  const details = props.details;
 
-    return (
-      <div className="listview-wrapper">
-        <List component='ul' disablePadding={false} dense={false} className="verse-list-ul">
-          {results.map((value, index) =>
-            <ListItem key={index} className="no-padding">
-              <ListItemText className="verse-text" >
+  if (!props.results) return null;
+
+  return (
+    <div className="listview-wrapper">
+      <List component='ul' disablePadding={false} dense={false} className="verse-list-ul">
+        {results.map((value, index) =>
+          <ListItem key={index} className="no-padding">
+            <ListItemText className="verse-text" >
               { value.edition.type === 'translation' &&
-                <span className="ayah-details">{getLangName(value.edition.language)}</span>
+                <span className="ayah-details">{getLangName(value.edition.language) }</span>
               }
 
-              { (value.edition.language === 'ar' && details.audio) && 
+              { (value.edition.language === 'ar' && details.audio) &&
                 <audio controls="controls" className="q-audio-player">
                   <source src={details.audio} type="audio/wav" />
-                  Your browser does not support the <code>audio</code> element. 
+                  Your browser does not support the <code>audio</code> element.
                 </audio>
               }
-              <p className={value.edition.language === 'ar'? "txt-arabic" :''}>{value.text}</p>
-                
+              <p className={value.edition.language === 'ar' ? "txt-arabic" : ''}>{value.text}</p>
+
             </ListItemText>
           </ListItem>
-          )
+        )
         }
-        </List>
-      </div>
-    )
-  }
-    
+      </List>
+    </div>
+  )
+}
+
 export default Listview

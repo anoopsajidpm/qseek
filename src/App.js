@@ -86,6 +86,7 @@ class App extends React.Component {
       selSurahNumber: 0,
       preloader: true,
       defaultTrans: {},
+      filterInput: '',
       //filteredLangs: {},
 
       q_edition_ar: 'quran-simple-enhanced',
@@ -151,10 +152,6 @@ class App extends React.Component {
       if (search_string.split(':').length >= 2) {
         sur = search_string.split(':')[0];
         this.getSurahDetails(sur);
-
-
-
-
 
       } else {
         if (Number(search_string) <= this.state.totalQuranAyahs) {
@@ -330,7 +327,7 @@ class App extends React.Component {
     cachedFetch('https://api.alquran.cloud/v1/ayah/' + filter + '/editions/' + q_editions)
       .then(res => res.json())
       .then((data) => {
-        console.log(data.data[0]);
+        //console.log(data.data[0]);
         this.setState({
           selectedSurah: data.data[0].surah,
           selSurahNumber: data.data[0].surah.number,
@@ -526,13 +523,10 @@ class App extends React.Component {
     let totAyahsInSurah = this.state.selectedSurah.numberOfAyahs;
     let search_string = this.state.url_search;
 
-    //if(search_string.split(':')[1] && Number(search_string.split(':')[1])){
-    //console.log(this.state.selectedSurah);
-
     console.log(search_string);
 
     let ayah = undefined;
-    // if (search_string){
+    
     if (search_string.split(':').length >= 2 && Number(search_string.split(':')[1])) {
       console.log(Number('') ? true : false);
       if (this.validateInput(search_string.split(':')[1])) {
@@ -550,7 +544,12 @@ class App extends React.Component {
         console.log('Error: Ayah Number Invalid!');
       }
     } else {
-      console.log('Error: Ayah Number Invalid or not found!');
+      this.setState({
+          // selSurahNumber: sur,
+          preloader: true,
+          inputVal: '1',
+        }, () => this.searchForAyah());
+      console.log('Showing up first Ayah!');
     }
     // else -  no search_string in url
     if (!ayah || ayah === undefined) {
@@ -634,6 +633,36 @@ class App extends React.Component {
 
   }
 
+  onChangeHandler(e){
+    this.setState({
+      filterInput: e.target.value,
+    })
+    let chapts = this.state.surahList;
+    console.log(e.target.value);
+    let temp = [];
+    var newArray = chapts.filter((d)=>{
+      //console.log(d);
+      temp = Object.values(d);
+      return temp.filter(item => String(item).substr(0, e.target.value.length) === e.target.value);
+      /*for (var prop in temp) {
+        console.log(prop);
+        //if (d.hasOwnProperty(prop)) {
+          // Do things here
+          console.log(prop.indexOf(e.target.value));
+          return prop.indexOf(e.target.value) !== -1    
+        //}
+      }*/
+      /*temp = Object.values(d);
+      console.log(temp);
+      return temp.indexOf(e.target.value) !== -1*/ 
+    });
+    console.log(newArray)
+    //surahs = newArray;
+    /*this.setState({
+      users:newArray
+    })*/
+
+  }
   render() {
     let listview;
     // url is 'https://www.example.com/user?id=123&type=4';
@@ -701,6 +730,43 @@ class App extends React.Component {
       </Popup>
         )
 
+        
+        /*const surahList = surahs
+        .filter(d => this.state.filterInput === '' || d.includes(this.state.filterInput))
+        .map((d, index) => <li key={index}>{d}</li>);*/
+
+        const SurahIndex = () => (
+
+          <div className="surahlist-container">
+              <h3>Surah Index</h3>
+              {/*<input value={this.state.filterInput} type="text" onChange={this.onChangeHandler.bind(this)}/>*/}
+              
+              <ul className="surah-list-ul">
+                <li className="row-flex list-heads">
+                  <p className="sno" >No.</p>
+                  <p className="sname">Surah Name</p>
+                  <p className="sayah">Ayahs</p>
+                </li>
+                {
+                  //.filter(d => this.state.filterInput === '' || d.includes(this.state.filterInput))
+                  surahs
+                  .map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
+
+                    <span data-value={surah.number} className="sno">{surah.number}</span>
+                    <div className="surahname-wrapper">
+                      <p data-value={surah.number} className="sname-ar">{surah.name}</p>
+                      <p data-value={surah.number} className="sname"><span className="blue-text">{surah.englishNameTranslation}</span> | {surah.englishName}</p>
+                      <p data-value={surah.number} className="sname lighter">Tap to select this Surah</p>
+                    </div>
+                    <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
+                    
+
+
+                  </li>)
+                }
+              </ul>
+            </div>
+        )
         const SurahPopup =  () => (
         <Popup
           trigger={<button value="Surahs" className="surah-button">Surah</button>}
@@ -720,13 +786,17 @@ class App extends React.Component {
                 <p className="sno" >No.</p>
                 <p className="sname">Surah Name</p>
                 <p className="sayah">Ayahs</p>
+                
               </li>
               {
                 surahs.map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
 
+            
                   <span data-value={surah.number} className="sno">{surah.number}</span>
                   <span data-value={surah.number} className="sname">{surah.englishName}</span>
                   <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
+                  
+                  
 
                 </li>)
               }
@@ -766,30 +836,7 @@ class App extends React.Component {
           }
           {
             !selectedSurah.number &&
-            <div className="surahlist-container">
-              <h3>Surah Index</h3>
-              <ul className="surah-list-ul">
-                <li className="row-flex list-heads">
-                  <p className="sayah">Ayahs</p>
-                  <p className="sname">Surah Name</p>
-                  <p className="sno" >No.</p>
-                </li>
-                {
-                  surahs.map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
-
-                    <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
-                    <div className="surahname-wrapper">
-                      <p data-value={surah.number} className="sname-ar">{surah.name}</p>
-                      <p data-value={surah.number} className="sname"><span className="blue-text">{surah.englishNameTranslation}</span> | {surah.englishName}</p>
-                      <p data-value={surah.number} className="sname lighter">Tap to select this Surah</p>
-                    </div>
-                    <span data-value={surah.number} className="sno">{surah.number}</span>
-
-
-                  </li>)
-                }
-              </ul>
-            </div>
+            <SurahIndex />
           }
           <section className={this.state.searchBlockClass} id="search-block">
             <div className="row-flex ayah-input-wrapper" >
@@ -797,7 +844,9 @@ class App extends React.Component {
                 <div className="help-bubble left bottom" onClick={(evt) => this.closeBubble} hidden >
                   <p>Tap to select Surah here.</p>
                 </div>
+                { selectedSurah.number && 
                 <SurahPopup />
+                }
 
                 {this.state.selSurahNumber > 0 &&
                   <p ref={(sur) => { this.surahLabel = sur; } } className="surah-name">{this.state.selSurahNumber}: </p>

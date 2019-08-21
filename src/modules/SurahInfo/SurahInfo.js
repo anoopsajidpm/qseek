@@ -91,7 +91,7 @@ const LangPopup =  (props) => {
         <section className='select-value-wrapper'>
             <label >Translation: 
                 <span>
-                    {props.translations.nativeName ? ' ' + props.translations.nativeName : ' None'}
+                    {props.translations && props.translations.nativeName ? ' ' + props.translations.nativeName : ' None'}
                 </span>
             </label>
 
