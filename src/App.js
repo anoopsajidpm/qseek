@@ -1,7 +1,6 @@
 
 //main
 import React from 'react';
-
 //styles
 import './App.scss';
 
@@ -18,58 +17,13 @@ import Popup from "reactjs-popup";
 //JSON
 import Surahs from './assets/json/SurahList.json';
 import trans_conf from './assets/json/lang_config.json';
-import Langs from './assets/json/langs.json';
-import Editions from './assets/json/editions.json';
 
 //custom componenets
 import SurahInfo from './modules/SurahInfo/SurahInfo';
 import Listview from './components/Listview/Listview';
 import Loader from './components/Loader/Loader';
-
-//custom modules 
-// import {appMods} from './modules/App/AppModules';
-//unused - to remove
-/*import {
-  FacebookShareButton,
-  GooglePlusShareButton,
-  LinkedinShareButton,
-  TwitterShareButton,
-  TelegramShareButton,
-  WhatsappShareButton,
-  PinterestShareButton,
-  VKShareButton,
-  OKShareButton,
-  RedditShareButton,
-  TumblrShareButton,
-  LivejournalShareButton,
-  MailruShareButton,
-  ViberShareButton,
-  WorkplaceShareButton,
-  EmailShareButton,
-} from 'react-share';*/
-//import TextField from '@material-ui/core/TextField';
-
-//import PropTypes from 'prop-types';
-//import { withStyles } from '@material-ui/core/styles';
-//import AppBar from '@material-ui/core/AppBar';
-//import Toolbar from '@material-ui/core/Toolbar';
-//import Popover from '@material-ui/core/Popover';
-
-//import Typography from '@material-ui/core/Typography';
-
-//import Button from '@material-ui/core/Button';
-//import Tabs from '@material-ui/core/Tabs';
-//import Tab from '@material-ui/core/Tab';
-
-//import FormGroup from '@material-ui/core/FormGroup';
-//import FormControlLabel from '@material-ui/core/FormControlLabel';
-//import Checkbox from '@material-ui/core/Checkbox';
-//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-//import CheckBoxIcon from '@material-ui/icons/CheckBox';
-//import Favorite from '@material-ui/icons/Favorite';
-//import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
-
-//import Qry from 'query-string';
+import { StringExtract } from './modules/StringExtract/StringExtract';
+//import {BrowserRouter, Link, Route, Switch} from 'react-router-dom';
 
 class App extends React.Component {
   constructor(props) {
@@ -97,7 +51,8 @@ class App extends React.Component {
       url_search: '',
       totalQuranAyahs: 0,
       shareBody: '',
-      versesNowShowing: []
+      versesNowShowing: [],
+      showHelp: false
     }
     //const langs = JSON.parse('./langs.json');
     this.handleLoad = this.handleLoad.bind(this);
@@ -125,7 +80,7 @@ class App extends React.Component {
       surahList: Surahs.data,
       totalQuranAyahs: this.getTotalAyahCount(Surahs.data),
       url_origin: window.location.origin,
-      url_search: this.extractSearchStrings(window.location.search),
+      url_search: StringExtract(window.location.search), //this.extractSearchStrings(window.location.search),
       defaultTrans: trans_conf.filter(item => item.active)[0],
       preloader: false
     }, () => this.checkForSearchString());
@@ -166,81 +121,6 @@ class App extends React.Component {
     }
   }
 
-  // --- extract surah & ayah numbers from url string
-  extractSearchStrings(url_param) {
-
-    //let url_param = window.location.search;
-    let url_string = '';
-    //let url_param = this.state.url_search;
-    let str_split = [];
-    let valid;
-    if (url_param) {
-      url_param = String(url_param).replace('?', '');
-      str_split = url_param.split(':'); // if -> ?<surahnumber>:<ayahnumber>
-      if (str_split.length > 1) {
-        str_split.map(str => {
-          if (Number(str)) {
-            valid = true;
-          } else {
-            valid = false;
-          }
-        });
-        if (valid) {
-          url_string = url_param;
-        }
-      } else {
-        str_split = url_param.split('&'); // if -> ?surah=<num>&ayah=<num>
-        let res = [];
-        if (str_split.length > 1) { // if param has 2 parts
-          str_split.map(str => {
-            let parts = str.split('='); // e.g: foo='bar'
-            if (parts.length === 2) { // if <search>=<value>
-              if (Number(parts[1])) {
-                res.push(parts[1]);
-              }
-            } else {
-              if (Number(parts[0])) {
-                res.push(parts[0]);
-              }
-            }
-          });
-          url_string = String(res).replace(',', ':');
-        } else { // if param has only 1 part
-          let parts = str_split[0].split('='); // e.g: foo='bar'
-          if (parts.length === 2) { // if <search>=<value>
-            if (Number(parts[1])) {
-              url_string = parts[1];
-            }
-          } else {
-            if (Number(parts[0])) {
-              url_string = parts[0];
-            }
-          }
-        }
-
-      }
-
-    }
-    return url_string
-  }
-
-  // -- get the languages opted by user
-  /*filteredTrans() {
-      let res = [];
-      let test = {};
-      trans_conf.map(lng => {
-          let temp = Langs.filter(item => item.code === lng.code)[0];
-          res.push(temp);
-          temp.active = Number(lng.active)? true :false;
-          
-          if(Number(lng.active)){
-              this.selectTranslation(temp);
-          }
-      })
-      //console.log(this.state.selectedTrans);
-      return res;
-  }*/
-
   // -- validate the ayah number input from user
   validateInput(value) {
     let isValid = true;
@@ -259,7 +139,7 @@ class App extends React.Component {
   }
 
   // --  search for ayah result 
-  searchForAyah(event) {
+  searchForAyah() {
     let filter = Number(this.state.inputVal);
     let loader = this.state.preloader;
     let q_editions = (this.state.q_edition_ar + ',' + this.state.q_edition_trans + ',' + this.state.q_edition_audio);
@@ -334,12 +214,12 @@ class App extends React.Component {
           inputVal: data.data[0].numberInSurah,
           searchError: '',
           rawData: data
-        }, () => this.processData(data));
+        }, () => this.processData());
       })
       .catch(
-      this.setState({
-        searchError: 'data error'
-      })
+        this.setState({
+          searchError: 'data error'
+        })
       )
 
   }
@@ -365,12 +245,12 @@ class App extends React.Component {
     if (refreshData) {
       this.setState({
         defaultTrans: trans
-      }, () => this.processData(this.state.rawData));
+      }, () => this.processData());
     }
   }
 
   // -- process the data retreived from ayah api - the main result 
-  processData(results) {
+  processData() {
     let res = [];
     let audio = '';
     let details = null;
@@ -498,6 +378,9 @@ class App extends React.Component {
 
   // --- select surah from popup 
   selectSurah = (evt) => {
+    console.log('-----------------');
+
+    console.log(this.props);
     //console.log(evt.target.value || evt.target.getAttribute('data-value'));
     let dataVal = evt.target.value || evt.target.getAttribute('data-value');
     this.getSurahDetails(dataVal);
@@ -520,13 +403,12 @@ class App extends React.Component {
   // --- get ayah input from url string
   getAyahFromUrl() {
     console.log(this.state.selectedSurah);
-    let totAyahsInSurah = this.state.selectedSurah.numberOfAyahs;
     let search_string = this.state.url_search;
 
     console.log(search_string);
 
     let ayah = undefined;
-    
+
     if (search_string.split(':').length >= 2 && Number(search_string.split(':')[1])) {
       console.log(Number('') ? true : false);
       if (this.validateInput(search_string.split(':')[1])) {
@@ -545,10 +427,10 @@ class App extends React.Component {
       }
     } else {
       this.setState({
-          // selSurahNumber: sur,
-          preloader: true,
-          inputVal: '1',
-        }, () => this.searchForAyah());
+        // selSurahNumber: sur,
+        preloader: true,
+        inputVal: '1',
+      }, () => this.searchForAyah());
       console.log('Showing up first Ayah!');
     }
     // else -  no search_string in url
@@ -594,6 +476,8 @@ class App extends React.Component {
     }
   }
 
+
+
   // navigate to next & previsous ayahs 
   navigateAyah = (evt) => {
     let data = evt.target.getAttribute('data-value');
@@ -629,40 +513,27 @@ class App extends React.Component {
     this.setState({
       inputVal: String(valNow),
       navBtnClass: { back: navBackClass, next: navNextClass }
-    }, () => this.searchForAyah(evt));
+    }, () => this.searchForAyah());
 
   }
 
-  onChangeHandler(e){
+  /*onChangeHandler(e) {
     this.setState({
       filterInput: e.target.value,
     })
     let chapts = this.state.surahList;
     console.log(e.target.value);
     let temp = [];
-    var newArray = chapts.filter((d)=>{
+    var newArray = chapts.filter((d) => {
       //console.log(d);
       temp = Object.values(d);
       return temp.filter(item => String(item).substr(0, e.target.value.length) === e.target.value);
-      /*for (var prop in temp) {
-        console.log(prop);
-        //if (d.hasOwnProperty(prop)) {
-          // Do things here
-          console.log(prop.indexOf(e.target.value));
-          return prop.indexOf(e.target.value) !== -1    
-        //}
-      }*/
-      /*temp = Object.values(d);
-      console.log(temp);
-      return temp.indexOf(e.target.value) !== -1*/ 
+      
     });
     console.log(newArray)
-    //surahs = newArray;
-    /*this.setState({
-      users:newArray
-    })*/
+    
 
-  }
+  }*/
   render() {
     let listview;
     // url is 'https://www.example.com/user?id=123&type=4';
@@ -678,212 +549,178 @@ class App extends React.Component {
         key={this.state.ayahDetails && this.state.number}
         results={this.state.mainResult}
         details={this.state.ayahDetails}
-        />
+      />
     }
     const surahs = this.state.surahList;
     const selectedSurah = this.state.selectedSurah;
     let share_url = '';
+
+
     if (selectedSurah && this.state.inputVal) {
       share_url = this.state.url_origin + '?' + selectedSurah.number + ':' + this.state.inputVal;
       console.log(share_url);
+
     }
-    const SharePopup = () => (
+    const HelpWrapper = () => (
+      <div>
+        hello
+      </div>
+    )
+
+    const SurahIndex = () => (
+
+      <div className="surahlist-container">
+        <h3>Surah Index</h3>
+
+        <ul className="surah-list-ul">
+          <li className="row-flex list-heads">
+            <p className="sno" >&nbsp;</p>
+            <p className="sname">Surah Name</p>
+            <p className="sno">No</p>
+          </li>
+          {
+            surahs
+              .map(surah => <li key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
+
+                <span data-value={surah.number} className="sno">&nbsp;</span>
+                <div className="surahname-wrapper col-flex">
+                  <p data-value={surah.number} className="sname-ar">{surah.name}</p>
+                  <p data-value={surah.number} className="sname">
+                    <span className="blue-text">{surah.englishNameTranslation}</span> | {surah.englishName}
+                  </p>
+                  <p data-value={surah.number} className="sname lighter blue-label">Ayahs: <strong>{surah.numberOfAyahs}</strong></p>
+                </div>
+                <span data-value={surah.number} className="sno">{surah.number}</span>
+
+
+
+              </li>)
+          }
+        </ul>
+      </div>
+
+
+    )
+
+    const SurahPopup = () => (
       <Popup
-        trigger={<button value="Share" className="share-button">Share</button>}
+        trigger={<button value="Surahs" className="surah-button">Surah</button>}
         on="click"
         position="center center"
         modal
-        closeOnEscape
         closeOnDocumentClick
         className="surah-popup"
         onRequestClose={() => {
           this.setState({ modalIsOpen: false });
-        } }
-        >
+        }}
+      >
         <div className="popup-wrapper">
-          <h3>Share this Ayah ({this.state.selSurahNumber}: {this.state.inputVal}) </h3>
-          <div className="share-content-wrapper">
-            <label htmlFor="share-message" >Message (optional) </label>
-            <textarea placeholder="Enter message, if any" rows="4" cols="38" className="share-msg" maxLength="120" autofocus="autofocus" />
-            <div className="row-flex share-actions">
-              <p>Share this Ayah using: </p>
-              <WhatsappShareButton
-                title="Q-search - Check out this Ayah"
-                url={share_url}
-                seperator="<br />"
-                className="social-btn"
-                children=<WhatsappIcon size={30} round={false}/>
-                  />
-             
-                  <EmailShareButton
-                    subject="Q-search - Check out this Ayah"
-                    body="body text goes here"
-                    url={share_url}
-                    seperator="^"
-                    openWindow="true"
-                    className="social-btn"
-                    children=<EmailIcon size={30} round={false}/>
-                      />
-            </div>
-            </div>
-          </div>
-      </Popup>
-        )
+          <h3>Select Surah: </h3>
+          <ul className="surah-list-ul">
+            <li className="row-flex list-heads">
+              <p className="sno" >No.</p>
+              <p className="sname">Surah Name</p>
+              <p className="sayah">Ayahs</p>
 
-        
-        /*const surahList = surahs
-        .filter(d => this.state.filterInput === '' || d.includes(this.state.filterInput))
-        .map((d, index) => <li key={index}>{d}</li>);*/
-
-        const SurahIndex = () => (
-
-          <div className="surahlist-container">
-              <h3>Surah Index</h3>
-              {/*<input value={this.state.filterInput} type="text" onChange={this.onChangeHandler.bind(this)}/>*/}
-              
-              <ul className="surah-list-ul">
-                <li className="row-flex list-heads">
-                  <p className="sno" >No.</p>
-                  <p className="sname">Surah Name</p>
-                  <p className="sayah">Ayahs</p>
-                </li>
-                {
-                  //.filter(d => this.state.filterInput === '' || d.includes(this.state.filterInput))
-                  surahs
-                  .map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
-
-                    <span data-value={surah.number} className="sno">{surah.number}</span>
-                    <div className="surahname-wrapper">
-                      <p data-value={surah.number} className="sname-ar">{surah.name}</p>
-                      <p data-value={surah.number} className="sname"><span className="blue-text">{surah.englishNameTranslation}</span> | {surah.englishName}</p>
-                      <p data-value={surah.number} className="sname lighter">Tap to select this Surah</p>
-                    </div>
-                    <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
-                    
-
-
-                  </li>)
-                }
-              </ul>
-            </div>
-        )
-        const SurahPopup =  () => (
-        <Popup
-          trigger={<button value="Surahs" className="surah-button">Surah</button>}
-          on="click"
-          position="center center"
-          modal
-          closeOnDocumentClick
-          className="surah-popup"
-          onRequestClose={() => {
-            this.setState({ modalIsOpen: false });
-          } }
-          >
-          <div className="popup-wrapper">
-            <h3>Select Surah: </h3>
-            <ul className="surah-list-ul">
-              <li className="row-flex list-heads">
-                <p className="sno" >No.</p>
-                <p className="sname">Surah Name</p>
-                <p className="sayah">Ayahs</p>
-                
-              </li>
-              {
-                surahs.map(surah => <li  key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
-
-            
-                  <span data-value={surah.number} className="sno">{surah.number}</span>
-                  <span data-value={surah.number} className="sname">{surah.englishName}</span>
-                  <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
-                  
-                  
-
-                </li>)
-              }
-            </ul>
-          </div>
-        </Popup>
-        )
-
-
-        return (
-        <div className="page-wrapper">
-          <header className="App-header">
-            <h1 onClick={this.resetView}>
-              Q-Search
-            </h1>
+            </li>
             {
-              /*(share_url !== '') &&
-              <SharePopup />*/
+              surahs.map(surah => <li key={surah.number} value={surah.number} className="row-flex" onClick={this.selectSurah}>
+
+
+                <span data-value={surah.number} className="sno">{surah.number}</span>
+                <span data-value={surah.number} className="sname">{surah.englishName}</span>
+                <span data-value={surah.number} className="sayah">{surah.numberOfAyahs}</span>
+
+
+
+              </li>)
             }
-          </header>
-          {
-            selectedSurah.number &&
-
-            <SurahInfo
-              details={this.state.ayahDetails}
-              onNavNext={this.navigateAyah}
-              onNavBack ={this.navigateAyah}
-              selectedSurah ={selectedSurah}
-              totalAyahs = {this.state.totalQuranAyahs}
-              navBackClass = {this.state.navBtnClass.back}
-              navNextClass = {this.state.navBtnClass.next}
-              inputVal = {this.state.inputVal}
-              refreshData = {this.processData}
-              selectedTrans = {this.state.defaultTrans}
-              selectTrans = {this.selectTranslation}
-              />
-          }
-          {
-            !selectedSurah.number &&
-            <SurahIndex />
-          }
-          <section className={this.state.searchBlockClass} id="search-block">
-            <div className="row-flex ayah-input-wrapper" >
-              <div className="row-flex surah-select-wrapper" >
-                <div className="help-bubble left bottom" onClick={(evt) => this.closeBubble} hidden >
-                  <p>Tap to select Surah here.</p>
-                </div>
-                { selectedSurah.number && 
-                <SurahPopup />
-                }
-
-                {this.state.selSurahNumber > 0 &&
-                  <p ref={(sur) => { this.surahLabel = sur; } } className="surah-name">{this.state.selSurahNumber}: </p>
-                }
-              </div>
-              <div className="ayah-input">
-                <label hidden>Ayah Number: </label>
-                <input type="number"
-                  value={this.state.inputVal}
-                  onChange={evt => this.updateInputVal(evt) }
-                  onKeyDown={evt => this.verifyInputKey(evt) }
-                  placeholder="Ayah No."
-                  ref={(input) => { this.ayahInput = input; } }
-                  className="input-ayah"
-                  pattern="^[0-9]*$"
-                  min="1"
-                  max={this.state.selectedSurah.numberOfAyahs}
-                  />
-
-                <label ref={(sur) => { this.surahLabel = sur; } } className="ayah-total">of {this.state.selectedSurah.numberOfAyahs ? this.state.selectedSurah.numberOfAyahs : 6236 }</label>
-
-              </div>
-              <button onClick={this.searchForAyah} className={this.state.searchBtnClass} value="Search" >Search</button>
-            </div>
-          </section>
-          <div className='content-wrapper'>
-            {listview}
-
-          </div>
-
-          { this.state.preloader &&
-            <Loader />
-
-          }
+          </ul>
         </div>
-        );
-        }
-        }
+      </Popup>
+    )
 
-        export default App;
+
+    return (
+      <div className="page-wrapper">
+        
+        <header className="App-header">
+          <h1 onClick={this.resetView}>
+            Q-Search
+            </h1>
+          {
+            /*(share_url !== '') &&
+            <SharePopup />*/
+          }
+         {/*  <button value="?" onClick={this.openHelp(true)} >?</button> */}
+        </header>
+        {
+          selectedSurah.number &&
+
+          <SurahInfo
+            details={this.state.ayahDetails}
+            onNavNext={this.navigateAyah}
+            onNavBack={this.navigateAyah}
+            selectedSurah={selectedSurah}
+            totalAyahs={this.state.totalQuranAyahs}
+            navBackClass={this.state.navBtnClass.back}
+            navNextClass={this.state.navBtnClass.next}
+            inputVal={this.state.inputVal}
+            refreshData={this.processData}
+            selectedTrans={this.state.defaultTrans}
+            selectTrans={this.selectTranslation}
+          />
+        }
+        {
+          !selectedSurah.number &&
+          <SurahIndex />
+        }
+        <section className={this.state.searchBlockClass} id="search-block">
+          <div className="row-flex ayah-input-wrapper" >
+            <div className="row-flex surah-select-wrapper" >
+              <div className="help-bubble left bottom" onClick={() => this.closeBubble} hidden >
+                <p>Tap to select Surah here.</p>
+              </div>
+              {selectedSurah.number &&
+                <SurahPopup />
+              }
+
+              {this.state.selSurahNumber > 0 &&
+                <p ref={(sur) => { this.surahLabel = sur; }} className="surah-name">{this.state.selSurahNumber}: </p>
+              }
+            </div>
+            <div className="ayah-input">
+              <label hidden>Ayah Number: </label>
+              <input type="number"
+                value={this.state.inputVal}
+                onChange={evt => this.updateInputVal(evt)}
+                onKeyDown={evt => this.verifyInputKey(evt)}
+                placeholder="Ayah No."
+                ref={(input) => { this.ayahInput = input; }}
+                className="input-ayah"
+                pattern="^[0-9]*$"
+                min="1"
+                max={this.state.selectedSurah.numberOfAyahs}
+              />
+
+              <label ref={(sur) => { this.surahLabel = sur; }} className="ayah-total">of {this.state.selectedSurah.numberOfAyahs ? this.state.selectedSurah.numberOfAyahs : 6236}</label>
+
+            </div>
+            <button onClick={this.searchForAyah} className={this.state.searchBtnClass} value="Search" >Search</button>
+          </div>
+        </section>
+        <div className='content-wrapper'>
+          {listview}
+
+        </div>
+
+        {this.state.preloader &&
+          <Loader />
+
+        }
+      </div>
+    );
+  }
+}
+
+export default App;
