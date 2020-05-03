@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Q-Search",
+  "name": "Q-Search - to find in Qur'an",
   "icons": [
     {
       "src": "favicon.ico",
