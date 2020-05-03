@@ -52,7 +52,7 @@ class App extends React.Component {
       totalQuranAyahs: 0,
       shareBody: '',
       versesNowShowing: [],
-      showHelp: false
+      showHelp: true
     }
     //const langs = JSON.parse('./langs.json');
     this.handleLoad = this.handleLoad.bind(this);
@@ -69,7 +69,8 @@ class App extends React.Component {
 
   componentDidMount() {
     this.setState({
-      preloader: true
+      preloader: true,
+      
     }, () => window.addEventListener('load', this.handleLoad));
   }
 
@@ -82,7 +83,8 @@ class App extends React.Component {
       url_origin: window.location.origin,
       url_search: StringExtract(window.location.search), //this.extractSearchStrings(window.location.search),
       defaultTrans: trans_conf.filter(item => item.active)[0],
-      preloader: false
+      preloader: false,
+      showHelp: true
     }, () => this.checkForSearchString());
 
 
@@ -561,11 +563,7 @@ class App extends React.Component {
       console.log(share_url);
 
     }
-    const HelpWrapper = () => (
-      <div>
-        hello
-      </div>
-    )
+    
 
     const SurahIndex = () => (
 
@@ -586,7 +584,7 @@ class App extends React.Component {
                 <div className="surahname-wrapper col-flex">
                   <p data-value={surah.number} className="sname-ar">{surah.name}</p>
                   <p data-value={surah.number} className="sname">
-                    <span className="blue-text">{surah.englishNameTranslation}</span> | {surah.englishName}
+                    <span data-value={surah.number} className="blue-text">{surah.englishNameTranslation}</span> | {surah.englishName}
                   </p>
                   <p data-value={surah.number} className="sname lighter blue-label">Ayahs: <strong>{surah.numberOfAyahs}</strong></p>
                 </div>
@@ -643,6 +641,11 @@ class App extends React.Component {
 
     return (
       <div className="page-wrapper">
+        { /*
+          this.showHelp &&  
+          <div className="fader-wrapper"></div>
+          */
+        }
         
         <header className="App-header">
           <h1 onClick={this.resetView}>
