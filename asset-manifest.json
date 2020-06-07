@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/static/css/main.a01437e2.chunk.css",
-    "main.js": "/static/js/main.ce102dd3.chunk.js",
-    "main.js.map": "/static/js/main.ce102dd3.chunk.js.map",
-    "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
-    "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
-    "static/css/2.94155858.chunk.css": "/static/css/2.94155858.chunk.css",
-    "static/js/2.20a850d6.chunk.js": "/static/js/2.20a850d6.chunk.js",
-    "static/js/2.20a850d6.chunk.js.map": "/static/js/2.20a850d6.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.d0f06d2c174f3d62249f5eb2d70765ea.js": "/precache-manifest.d0f06d2c174f3d62249f5eb2d70765ea.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.94155858.chunk.css.map": "/static/css/2.94155858.chunk.css.map",
-    "static/css/main.a01437e2.chunk.css.map": "/static/css/main.a01437e2.chunk.css.map",
-    "static/media/App.scss": "/static/media/surah-icon.5a697ce5.svg",
-    "static/media/Loader.scss": "/static/media/preloader.0e31ec09.png",
-    "static/media/index.css": "/static/media/roboto-latin-900italic.bc833e72.woff"
+    "main.css": "/qseek/static/css/main.cbee2f72.chunk.css",
+    "main.js": "/qseek/static/js/main.a7d27491.chunk.js",
+    "main.js.map": "/qseek/static/js/main.a7d27491.chunk.js.map",
+    "runtime~main.js": "/qseek/static/js/runtime~main.0c93341e.js",
+    "runtime~main.js.map": "/qseek/static/js/runtime~main.0c93341e.js.map",
+    "static/css/2.5b8ae632.chunk.css": "/qseek/static/css/2.5b8ae632.chunk.css",
+    "static/js/2.20a850d6.chunk.js": "/qseek/static/js/2.20a850d6.chunk.js",
+    "static/js/2.20a850d6.chunk.js.map": "/qseek/static/js/2.20a850d6.chunk.js.map",
+    "index.html": "/qseek/index.html",
+    "precache-manifest.516867a268efa489b750a80ae542f035.js": "/qseek/precache-manifest.516867a268efa489b750a80ae542f035.js",
+    "service-worker.js": "/qseek/service-worker.js",
+    "static/css/2.5b8ae632.chunk.css.map": "/qseek/static/css/2.5b8ae632.chunk.css.map",
+    "static/css/main.cbee2f72.chunk.css.map": "/qseek/static/css/main.cbee2f72.chunk.css.map",
+    "static/media/App.scss": "/qseek/static/media/surah-icon.5a697ce5.svg",
+    "static/media/Loader.scss": "/qseek/static/media/preloader.0e31ec09.png",
+    "static/media/index.css": "/qseek/static/media/roboto-latin-900italic.bc833e72.woff"
   }
 }
