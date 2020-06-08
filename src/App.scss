@@ -91,10 +91,13 @@ h1{
   flex-direction: column;
   align-items: stretch;
   flex-basis: 100%;
+  background-color: #f6f6f6;
 }
 .content-wrapper{
   padding:15px 15px;
-  
+  border-top: solid 1px #e7e7e7;
+  border-radius: 25px 25px 0 0;
+  background-color: #fff;
   h2{
     margin: 0; padding:0;
   }
@@ -360,6 +363,7 @@ h1{
   //border-radius: 5px;
   color: #1d1d1d;
   margin-bottom: 50px;
+  background-color: #fff;
   h3{
     width: 100%;
     text-align:center;
@@ -472,7 +476,7 @@ h1{
  // margin-top: 20px;
   color: #1d1d1d;
   padding: 5px 10px 5px;
-  border-bottom: solid 1px #e7e7e7;
+  //border-bottom: solid 1px #e7e7e7;
   p{
     padding:0; //5px 0; 
     margin:0;

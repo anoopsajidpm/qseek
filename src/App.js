@@ -146,6 +146,7 @@ class App extends React.Component {
     let loader = this.state.preloader;
     let q_editions = (this.state.q_edition_ar + ',' + this.state.q_edition_trans + ',' + this.state.q_edition_audio);
 
+    
     if (this.state.ayahDetails && this.state.ayahDetails.audio) {
       // reset existing audio data 
       this.setState({
@@ -223,7 +224,7 @@ class App extends React.Component {
           searchError: 'data error'
         })
       )
-
+        
   }
 
   // -- select the translation from drop down
