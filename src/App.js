@@ -513,6 +513,7 @@ class App extends React.Component {
         navNextClass = 'nav-btn next';
       }
     }
+    window.location.search = 
     this.setState({
       inputVal: String(valNow),
       navBtnClass: { back: navBackClass, next: navNextClass }
@@ -650,7 +651,7 @@ class App extends React.Component {
         
         <header className="App-header">
           <h1 onClick={this.resetView}>
-            Q-Search
+            Q-seek
             </h1>
           {
             /*(share_url !== '') &&
