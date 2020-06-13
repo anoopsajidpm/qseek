@@ -2,7 +2,7 @@
   "name": "q-search",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://anoopsajidpm.github.io/qseek",
+  "homepage": "https://qseek.anoopsajid.com",
   "dependencies": {
     "@material-ui/core": "^3.9.4",
     "json-server": "^0.15.1",
